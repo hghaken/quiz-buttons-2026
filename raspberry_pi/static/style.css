@@ -1,0 +1,241 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+/*    max-width: 1000px;  */
+    width = 100%;
+    margin: auto;
+}
+h1 {
+    color: #333;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 5px;
+    text-align: center;
+}
+
+
+h2 {
+    color: #333;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 5px;
+    text-align: center;
+}
+
+h3 {
+    color: blue;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 5px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 4px;
+    text-align: center;
+}
+th {
+    background-color: #f2f2f2;
+}
+
+form {
+    display: inline;
+}
+
+input[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+.disabled {
+    color: red;
+}
+
+.offline {
+    color: gray;
+}
+
+p {
+    font-weight: bold;
+}
+
+.setup-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.setup-button:hover {
+    background-color: #0056b3;
+}
+
+.score-button {
+    position: fixed;
+    bottom: 20px;
+    right: 130px;
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.score-button:hover {
+    background-color: #0056b3;
+}
+
+
+
+
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #007BFF;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.restart-button {
+    background-color: #FFA500;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.restart-button:hover {
+    background-color: #FF8C00;
+}
+
+input.shutdown-button {
+    background-color: #ff0000;  /* red */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+input.shutdown-button:hover {
+    background-color: #cc0000;  /* Darker red */
+}
+
+.bottom-left-button {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.bottom-left-button:hover {
+    background-color: #0056b3;
+}
+
+.countdown {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 10px;
+    background-color: #ffebee;
+    color: #d32f2f;
+    border: 3px solid #d32f2f;
+}
+.countdown.zero {
+    background-color: #ffcdd2;
+    color: #b71c1c;
+}
+
+.version-footer {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    font-size: 12px;
+    color: #666;
+}
+
+
+.center-image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height: auto;
+    max-width: 100%;
+}
+
+.numeric-center {
+    text-align: center;
+    padding: 8px;
+}
+
+.joker-button {
+    background-color: #FFA500;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.joker-button:hover {
+    background-color: #FF8C00;
+}
+
+.small-button {
+    padding: 4px 8px;
+    font-size: 12px;
+    margin: 2px;
+}
+.question-progresss {
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    background-color: #e3f2fd;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+.complete {
+    background-color: #c8e6c9;
+    color: #1b5e20;
+}

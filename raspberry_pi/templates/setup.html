@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz Setup</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Quiz Setup</h1>
+
+    <!-- Answer Timeout -->
+    <h2>1. Answer Timeout</h2>
+    <form action="/set_timeout" method="post">
+        <label for="timeout">Timeout na buzz (seconden):</label><br><br>
+        <select name="timeout" id="timeout" style="padding:8px; font-size:16px;">
+            <option value="15"  {% if current_timeout == 15 %}selected{% endif %}>15 seconden</option>
+            <option value="20"  {% if current_timeout == 20 %}selected{% endif %}>20 seconden</option>
+            <option value="25"  {% if current_timeout == 25 %}selected{% endif %}>25 seconden</option>
+            <option value="30"  {% if current_timeout == 30 %}selected{% endif %}>30 seconden</option>
+            <option value="40"  {% if current_timeout == 40 %}selected{% endif %}>40 seconden</option>
+            <option value="60"  {% if current_timeout == 60 %}selected{% endif %}>60 seconden</option>
+        </select>
+        <br><br>
+        <input type="submit" value="Opslaan" class="save-button">
+    </form>
+
+    <br><br>
+
+    <!-- Total Rounds -->
+    <h2>2. Total Rounds</h2>
+    <form action="/set_total_rounds" method="post">
+        <label for="total_rounds">Aantal rondes:</label><br><br>
+        <input type="number" name="total_rounds" id="total_rounds" value="{{ total_rounds }}" min="1" style="padding:8px; font-size:16px;">
+        <br><br>
+        <input type="submit" value="Opslaan" class="save-button">
+    </form>
+    <br><br>
+
+    <!-- Aantal vragen per ronde -->
+    <h2>3. Aantal vragen per ronde</h2>
+    <form action="/set_questions_per_round" method="post">
+        <label for="questions_per_round">Vragen per ronde:</label><br><br>
+        <input type="number" name="questions_per_round" id="questions_per_round" 
+               value="{{ questions_per_round }}" min="1" style="padding:8px; font-size:16px;">
+        <br><br>
+        <input type="submit" value="Opslaan" class="save-button">
+    </form>
+    <br><br>
+
+
+    <!-- Round Descriptions -->
+    <h2>4. Ronde Omschrijvingen</h2>
+    <form method="post" action="/set_round_descriptions">
+        <table>
+            <thead>
+                <tr>
+                    <th>Ronde Nummer</th>
+                    <th>Omschrijving (bijv. Muziekronde, Algemene Kennis...)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in range(1, total_rounds + 1) %}
+                <tr>
+                    <td>{{ i }}</td>
+                    <td>
+                        <input type="text" 
+                               name="desc_{{ i }}" 
+                               value="{{ round_descriptions.get(i|string, '') }}" 
+                               placeholder="Omschrijving invoeren...">
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        <input type="submit" value="Omschrijvingen Opslaan" class="save-button">
+    </form>
+
+    <br><br>
+
+    <!-- Speler Namen -->
+    <h2>5. Speler Namen Toewijzen</h2>
+    <form method="post" action="/set_player_names">
+        <table>
+            <thead>
+                <tr>
+                    <th>Button ID</th>
+                    <th>Naam (bijv. Heye, Team Rood, Speler 1...)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for id in registered %}
+                <tr>
+                    <td>{{ id }}</td>
+                    <td>
+                        <input type="text"
+                               name="name_{{ id }}"
+                               value="{{ player_names.get(id, '') }}"
+                               placeholder="Naam invoeren...">
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        <input type="submit" value="Namen Opslaan" class="save-button">
+    </form>
+
+    <br><br><br>
+
+    <!-- OTA Firmware Update -->
+    <h2>6. OTA Firmware Update</h2>
+    <form action="/upload_firmware" method="post" enctype="multipart/form-data">
+        <label>Selecteer firmware .bin bestand:</label><br><br>
+        <input type="file" name="firmware" accept=".bin" style="font-size:16px;">
+        <input type="submit" value="Uploaden naar Pi" class="save-button">
+    </form>
+    <br>
+    <form action="/ota_update" method="post">
+        <input type="hidden" name="target" value="all">
+        <input type="submit" value="OTA Update — Alle Knoppen"
+               class="restart-button"
+               onclick="return confirm('OTA update starten voor alle knoppen? Ze worden paars, dan groen en herstarten.');">
+    </form>
+    <br>
+    <table>
+        <thead><tr><th>Naam</th><th>Firmware</th><th>IP</th><th>OTA</th></tr></thead>
+        <tbody>
+            {% for id in registered %}
+            <tr>
+                <td>{{ player_names.get(id, id) }}</td>
+                <td>{{ button_versions.get(id, '—') }}</td>
+                <td><code>{{ button_ips.get(id, '—') }}</code></td>
+                <td>
+                    <form action="/ota_update" method="post" style="display:inline;">
+                        <input type="hidden" name="target" value="{{ id }}">
+                        <input type="submit" value="OTA">
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br><br>
+
+    <!-- Actie knoppen -->
+    <form id="restart-form" action="/restart" method="post">
+        <input type="button" value="Restart Quiz Server" class="restart-button" onclick="restartAndRedirect()">
+    </form>
+
+    <form id="shutdown-form" action="/shutdown" method="post">
+        <input type="button" value="Shutdown Raspberry Pi" class="shutdown-button" onclick="shutdownAndRedirect()">
+    </form>
+
+    <br><br><br>
+    <button class="bottom-left-button" onclick="window.location.href='/'">← Terug naar Resultaten</button>
+
+    <!-- NEW: Display software version -->
+    <div class="version-footer">Software Versie: {{ version }}</div>
+
+    <script>
+function restartAndRedirect() {
+    if (confirm('Weet je zeker dat je de server wilt herstarten?')) {
+        document.getElementById('restart-form').submit();
+        setTimeout(function() {
+            window.location.href = '/';
+        }, 8000);  // Wacht 8 seconden, dan terug naar hoofdpagina
+    }
+}
+
+
+
+
+
+    function shutdownAndRedirect() {
+       if (confirm('Weet je zeker dat je de Raspberry Pi wilt afsluiten?')) {
+        document.getElementById('shutdown-form').submit();
+        document.body.innerHTML = '<h2 style="text-align:center; margin-top:100px;">Raspberry Pi wordt afgesloten...</h2>';
+       }
+    }
+    </script>
+</body>
+</html>
+

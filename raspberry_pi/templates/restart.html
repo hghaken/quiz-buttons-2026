@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+    <h2 style="text-align:center; margin-top:100px;">Server herstart... even geduld</h2>
+    <p style="text-align:center;" id="status">Wachten op server...</p>
+
+    <script>
+      setTimeout(function tryConnect() {
+        fetch('/')
+        .then(response => {
+          if (response.ok) window.location.href = '/';
+          else setTimeout(tryConnect, 2000);
+        })
+        .catch(() => {
+          document.getElementById('status').textContent = 'Nog bezig...';
+          setTimeout(tryConnect, 2000);
+        });
+      }, 3000);
+    </script>
+  </body>
+</html>

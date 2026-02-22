@@ -1,0 +1,49 @@
+Information about the Quiz button environment.
+
+In the setup.html we can set the following variables:
+
+1 - Time out value (the time in seconds the player have to answer the question)
+2 - Number of rounds
+3 - Number of questions in a round
+4 - A description of every round
+5 - A description of every button
+
+On this page we have the following buttons:
+1 - Restart button (restart the server.py program) with a confirmation popup
+    During the restart the restart.html is shown.
+2 - Shutdown the pi with confirmation popup
+3 - return to the results.html page
+
+On this page we also show the software version of the server.py,
+and the ESP32 program (main.cpp) version in the bottom right.
+
+Here is the game flow:
+
+0  - After the restart of server.py we start with Round 1, Question 1 (vraag) 1
+1  - The GUI button says 'Start Vraag 1/x' in blue color
+     All esp32 buttons are in disabled mode (red LED)
+2  - Only At the beginning of a round a player can set a Joker with the GUI 'Inzet Jokere' button in orange color
+     The points in that round are 2x. Only one time a Joker can be set in the game for every player.
+3  - The GUI start vraag button is pressed (Blue color)
+4  - All esp32 button turn to enabled (green LED)
+5  - the question is asked
+6  - All players can press the esp32 button.
+7  - server.py computes the numbers 1 (Blue LED),2 (Cyan LED) and 3 (Yellow LED)
+     All other buttons have the white LED on. Every button is now disabled.
+8  - The time out counter starts to run
+9  - The number one can give an answer. If the answer is good we give them 1, 2 or 3 points
+     If the answer is wrong goto step 20
+10 - All esp32 turn to disabled (red LED)
+10 - We continue with the next question, and the GUI button volgende vraag 2 comes active again (green button)
+11 - We press the volgende vraag 2 and the start vraag 3/x appears
+12 - we continues until all question have asked in that round.
+13 - After all questions in a round are asked we continue with round 2 withe the GUI cyan button 'Volgende ronde' 
+14 - We go to step 1 again
+	 
+20 - If the answer is wrong we disable this esp32 button with  the Fout (blokeren) knob.
+21 - The number two can give an answer, if wrong than disable, if good we give points and continue.
+     Same for number three.
+22 - if all answers are wrong we continue with the GUI button reset ronde (geen punten)
+
+ 
+

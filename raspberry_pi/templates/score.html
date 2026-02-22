@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Score Overview</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Score Overzicht</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Team</th>
+                {% for r in range(1, total_rounds + 1) %}
+                <th colspan="2">Ronde {{ r }}<br><small>{{ round_descriptions.get(r|string, '') }}</small></th>
+                {% endfor %}
+                <th>Total</th>
+                <th>Joker</th>
+            </tr>
+            <tr>
+                <th></th>  <!-- Empty for player name -->
+                {% for r in range(1, total_rounds + 1) %}
+                <th class="numeric-center">Pnt</th>
+                <th class="numeric-center">Cor</th> 
+                {% endfor %}
+                <th class="numeric-center"></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for id, total in sorted_players %}
+            <tr>
+                <td>{{ player_names.get(id, id) }}</td>
+                {% for r in range(1, total_rounds + 1) %}
+                <td class="numeric-center">{{ scores.get(id, {}).get(r|string, 0) }}</td>  <!-- NEW: Centered points -->
+                <td class="numeric-center">{{ correct_answers.get(id, {}).get(r|string, 0) }}</td>  <!-- NEW: Centered corrects -->
+                {% endfor %}
+                <td class="numeric-center">{{ total }}</td>  <!-- NEW: Centered total -->
+                <td>{{ jokers.get(id, 'Not Used') }}</td>  <!-- Joker left-align for text -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Round-by-round score graph -->
+    <img src="{{ graph_url }}" class="center-image" alt="Score Graph">
+
+    <br><br>
+
+    <!--    <a href="/" class="back-link">← Terug naar Resultaten</a> -->
+
+    <button class="bottom-left-button" onclick="window.location.href='/'">← Terug naar Resultaten</button>
+
+    <a href="/setup" class="setup-button">Setup</a>
+</body>
+</html>
+
+

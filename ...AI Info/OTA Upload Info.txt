@@ -1,0 +1,20 @@
+When you update the firmware:
+
+1 - Make code changes in VS Code
+
+2 - Build: pio run (or press the PlatformIO build button) (check icon in bottom)
+    generates: .pio/build/seeed_xiao_esp32s3/firmware.bin
+
+3 - Go to the Setup page → section 5. OTA Firmware Update
+
+4 - Click "Selecteer firmware .bin bestand" → browse to
+    .pio/build/seeed_xiao_esp32s3/firmware.bin
+
+5 - Click "Uploaden naar Pi" — uploads the binary to the Pi
+    /home/game/quiz/firmware.bin
+
+6 - Click "OTA Update — Alle Knoppen" — Pi sends MQTT ota to all buttons
+
+7 - Buttons turn purple (downloading), then green (done) and reboot automatically
+
+No USB cable, no IP addresses to remember, no terminal commands needed.

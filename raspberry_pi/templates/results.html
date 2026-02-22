@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Quiz Results</title>
+    <meta http-equiv="refresh" content="2">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+
+  <body>
+    <h1>Quiz Overview</h1>
+    <!-- DISPLAY RONDE -->
+    <h2>Ronde {{ current_round }} / {{ total_rounds }}: {{ round_descriptions.get(current_round|string, '') }}</h2>
+
+
+    <!-- KNOPPEN SELECTIE -->
+    <div style="margin: 20px 0; display: flex; gap: 15px; flex-wrap: wrap;">
+
+      <!-- START VRAAG - alleen tonen als vraag nog niet gestart is -->
+      {% if not current_question_started and current_questions_completed < questions_per_round %}
+        <form action="/start_question" method="post">
+          <input type="submit"
+             value="Start Vraag {{ current_questions_completed + 1 }} / {{ questions_per_round }}"
+             class="startq"
+             style="background-color:#2196F3; font-size:18px; padding:12px 30px;">
+        </form>
+      {% endif %}
+
+      <!-- VOLGENDE VRAAG OF VOLGENDE RONDE - afhankelijk van positie in de ronde -->
+        {% if current_question_started and current_question_has_winner %}
+          {% if current_questions_completed + 1 < questions_per_round %}
+            <form action="/next_question" method="post">
+              <input type="submit" 
+                value="Volgende Vraag {{ current_questions_completed + 2 }}"
+                class="nextq"
+                style="background-color:#4CAF50; font-size:18px; padding:12px 30px;">
+            </form>
+
+            <!-- VOLGENDE RONDE -->
+            {% elif current_round < total_rounds %}
+              <form action="/increment_round" method="post">
+                <input type="submit" 
+                  value="Volgende Ronde"
+                  class="nextr"
+                  style="background-color:#00FFFF; font-size:18px; padding:12px 30px;">
+              </form>
+            {% else %}
+              <!-- QUIZ COMPLEET -->
+              <p style="color:#d32f2f; font-weight:bold; font-size:18px; margin:12px 0;">
+              Quiz compleet! Alle rondes zijn gespeeld.
+              </p>
+          {% endif %}
+        {% endif %}
+    </div>
+
+    <!-- COUNTDOWN TELLER -->
+    <div class="countdown" id="countdown">
+        Countdown: {{ remaining_time }}
+    </div>
+
+    <!-- TABEL -->
+    <table>
+      <thead>
+        <tr>
+          <th>Speler / Team</th>
+          <th>Status</th>
+          <th>Positie</th>
+          <th>Snelheid (ms)</th>
+          <th>Actie</th>
+          <th>Score</th>
+          <th>Correct</th>
+          <th>Joker</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% set first_ts = presses[0][0] if presses else 0 %}
+        {% set current_answerer = press_order[0] if press_order else None %}
+        {% for id in registered %}
+          <tr>
+            <td>{{ player_names.get(id, id) }}</td>
+            <td>{% if offline_status[id] %} Offline {% elif id in disabled %} Uitgeschakeld {% else %} Aktief {% endif %}</td>
+            <td>
+              {% if id in press_order %}
+                {{ press_order.index(id) + 1 }}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td>
+              {% set this_ts = 0 %}
+              {% for p in presses %}
+                {% if p[1] == id %}
+                  {% set this_ts = p[0] %}
+                {% endif %}
+              {% endfor %}
+              {{ ((this_ts - first_ts) * 1000) | int if this_ts > 0 else '-' }}
+            </td>
+            <td>
+              {% if id in press_order %}
+                <form action="/disable/{{ id }}" method="post" style="display:inline;">
+                  <input type="submit" value="Fout (Blokeren)">
+                </form>
+              {% endif %}
+            </td>
+            <td>
+              {{ player_totals.get(id, 0) }}
+              {% if id == current_answerer %}
+                <form action="/award/{{ id }}" method="post" style="display:inline;">
+                  <input type="submit" name="points" value="1" class="small-button">
+                  <input type="submit" name="points" value="2" class="small-button">
+                  <input type="submit" name="points" value="3" class="small-button">
+                </form>
+              {% endif %}
+            </td>
+            <td>
+              {{ correct_answers.get(id, {}).get(current_round|string, 0) }}
+            </td>
+            <td>
+              {% if jokers.get(id) %}
+                Gebruikt in ronde {{ jokers.get(id) }}
+              {% elif current_questions_completed == 0 and not current_question_started %}
+                <form action="/set_joker/{{ id }}" method="post" style="display:inline;">
+                  <input type="submit" value="Inzet Joker" class="joker-button"
+                  onclick="return confirm('Deze ronde de Joker gebruiken? Punten worden dubbel geteld. Gebruik is eenmalig!');">
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <p>Snelheid (ms): Gem: {{ avg_latency }} | Min: {{ min_latency }} | Max: {{ max_latency }}</p>
+
+    <form action="/reset" method="post">
+        <input type="submit" value="Reset Ronde (Geen punten)">
+    </form>
+
+    <br><br><br><br>
+    <form action="/reset_scores" method="post">
+        <input type="submit" value="Reset alle scores" 
+        onclick="return confirm('Weet je zeker dat je alle scores wilt resetten?');">
+    </form>
+
+    <br><br>
+    <form action="/reset_round" method="post">
+        <input type="submit" value="Reset Ronde Teller" 
+        onclick="return confirm('Weet je zeker dat je de ronde teller wilt resetten? Dit reset ook jokers.');">
+    </form>
+
+    <br><br>
+    <form action="/reregister" method="post">
+        <input type="submit" value="Alle knoppen zoeken">
+    </form>
+
+    <!-- -->
+    <a href="/score" class="score-button">Score Overzicht</a>
+    <a href="/setup" class="setup-button">Setup</a>
+
+    <!-- -->
+    <script>
+        let timeLeft = {{ remaining_time }};
+        function updateCountdown() {
+            const el = document.getElementById('countdown');
+            if (timeLeft > 0) {
+                el.textContent = `Time left: ${timeLeft} seconds`;
+                if (timeLeft <= 10) {
+                    el.classList.add('zero');
+                }
+                timeLeft--;
+            } else {
+                el.textContent = "";
+                el.classList.add('zero');
+            }
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();  // Initial display
+    </script>
+
+  </body>
+</html>
+
