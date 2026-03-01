@@ -24,6 +24,7 @@ CURRENT_ROUND_FILE   = '/home/game/quiz/current_round.json'
 ROUND_DESC_FILE      = '/home/game/quiz/round_descriptions.json'
 JOKERS_FILE          = '/home/game/quiz/jokers.json'
 CORRECT_ANSWERS_FILE = '/home/game/quiz/correct_answers.json'
+LED_BRIGHTNESS_FILE  = '/home/game/quiz/led_brightness.json'
 
 
 # =========================================================================== BESTAND HELPERS =====
@@ -44,6 +45,7 @@ def save_json(filepath, data):
 config             = load_json(CONFIG_FILE, {})
 player_names       = load_json(PLAYER_NAMES_FILE, {})
 player_colors      = load_json(PLAYER_COLORS_FILE, {})
+led_brightness     = load_json(LED_BRIGHTNESS_FILE, {'r': 255, 'g': 255, 'b': 255})
 scores             = load_json(SCORES_FILE, {})
 round_descriptions = load_json(ROUND_DESC_FILE, {})
 correct_answers    = load_json(CORRECT_ANSWERS_FILE, {})
@@ -79,6 +81,13 @@ def save_correct_answers():
 
 def save_player_colors():
     save_json(PLAYER_COLORS_FILE, player_colors)
+
+def save_led_brightness():
+    save_json(LED_BRIGHTNESS_FILE, led_brightness)
+
+def broadcast_brightness():
+    r, g, b = led_brightness['r'], led_brightness['g'], led_brightness['b']
+    mqtt_client.publish("quiz/all", f"brightness:{r},{g},{b}")
 
 def save_config():
     save_json(CONFIG_FILE, {
@@ -185,6 +194,7 @@ def on_connect(client, userdata, flags, rc, properties=None):
     print("Connected to MQTT")
     client.subscribe("quiz/#")
     client.publish("quiz/all", "disable")
+    broadcast_brightness()
 
 def on_message(client, userdata, msg):
     topic = msg.topic
@@ -465,6 +475,7 @@ def reregister():
     buzz_quizmaster(0.1)
     mqtt_client.publish("quiz/all", "reregister")
     time.sleep(1.5)
+    broadcast_brightness()
     lock_buttons()
     time.sleep(2.0)
     lock_buttons()
@@ -523,6 +534,7 @@ def setup_page():
                            player_colors=player_colors,
                            button_versions=button_versions,
                            button_ips=button_ips,
+                           led_brightness=led_brightness,
                            version=VERSION)
 
 
@@ -576,6 +588,18 @@ def set_player_names():
                 player_colors[id] = color
     save_json(PLAYER_NAMES_FILE, player_names)
     save_player_colors()
+    return redirect(url_for('setup_page'))
+
+
+@app.route('/set_led_brightness', methods=['POST'])
+def set_led_brightness():
+    global led_brightness
+    r = max(0, min(255, int(request.form.get('brightness_r', 255))))
+    g = max(0, min(255, int(request.form.get('brightness_g', 255))))
+    b = max(0, min(255, int(request.form.get('brightness_b', 255))))
+    led_brightness = {'r': r, 'g': g, 'b': b}
+    save_led_brightness()
+    broadcast_brightness()
     return redirect(url_for('setup_page'))
 
 

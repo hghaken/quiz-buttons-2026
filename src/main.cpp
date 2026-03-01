@@ -35,7 +35,7 @@
 #define GREEN_PIN 8   // D9  GPIO 8 PWM pin for GREEN LED
 #define BLUE_PIN  9   // D10 GPIO 9 PWM pin for BLUE LED
 
-const char* version    = "v0.12 (01-03-2026)";
+const char* version    = "v0.13 (01-03-2026)";
 const char* ssid       = "gamecontroller2.4";
 const char* password   = "gamecontroller";
 const char* mqttServer = "192.168.0.10";       // MQTT Controller IP address RPI 4B
@@ -73,13 +73,16 @@ bool          blinkState      = false;
 
 bool    ledReady = false;
 uint8_t ledR, ledG, ledB;
+float   brightnessR = 1.0f;   // Per-channel brightness scale (0.0 – 1.0)
+float   brightnessG = 1.0f;
+float   brightnessB = 1.0f;
 
 void setColor(uint8_t r, uint8_t g, uint8_t b) {
   if (ledReady && r == ledR && g == ledG && b == ledB) return;
   ledR = r; ledG = g; ledB = b; ledReady = true;
-  ledcWrite(0, r);  // channel 0 = RED_PIN
-  ledcWrite(1, g);  // channel 1 = GREEN_PIN
-  ledcWrite(2, b);  // channel 2 = BLUE_PIN
+  ledcWrite(0, (uint8_t)(r * brightnessR));  // channel 0 = RED_PIN
+  ledcWrite(1, (uint8_t)(g * brightnessG));  // channel 1 = GREEN_PIN
+  ledcWrite(2, (uint8_t)(b * brightnessB));  // channel 2 = BLUE_PIN
 }
 
 
@@ -199,6 +202,15 @@ void callback(char* topic, byte* payload, unsigned int length) {
       startBuzz(PAT_RESET);           // 2 beeps
     } else if (msg == "ota") {
       performOTA();
+    } else if (msg.startsWith("brightness:")) {
+      String vals = msg.substring(11);
+      int c1 = vals.indexOf(',');
+      int c2 = vals.indexOf(',', c1 + 1);
+      brightnessR = vals.substring(0, c1).toInt()       / 255.0f;
+      brightnessG = vals.substring(c1 + 1, c2).toInt()  / 255.0f;
+      brightnessB = vals.substring(c2 + 1).toInt()      / 255.0f;
+      ledReady = false;  // Invalidate cache so setColor re-writes with new brightness
+      setColor(ledR, ledG, ledB);
     }
 
   } else if (strcmp(topic, myTopic.c_str()) == 0) {

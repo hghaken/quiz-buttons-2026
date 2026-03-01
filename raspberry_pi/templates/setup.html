@@ -109,8 +109,48 @@
 
     <br><br><br>
 
+    <!-- LED Helderheid -->
+    <h2>6. LED Helderheid (RGB Knoppen)</h2>
+    <form action="/set_led_brightness" method="post">
+        <table>
+            <thead>
+                <tr><th>Kleur</th><th>Helderheid</th><th>Waarde</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="color:#e74c3c; font-weight:bold;">Rood</td>
+                    <td><input type="range" name="brightness_r" id="brightness_r"
+                               min="0" max="255" value="{{ led_brightness.r }}"
+                               oninput="document.getElementById('val_r').textContent=this.value"
+                               style="width:200px;"></td>
+                    <td><span id="val_r">{{ led_brightness.r }}</span></td>
+                </tr>
+                <tr>
+                    <td style="color:#27ae60; font-weight:bold;">Groen</td>
+                    <td><input type="range" name="brightness_g" id="brightness_g"
+                               min="0" max="255" value="{{ led_brightness.g }}"
+                               oninput="document.getElementById('val_g').textContent=this.value"
+                               style="width:200px;"></td>
+                    <td><span id="val_g">{{ led_brightness.g }}</span></td>
+                </tr>
+                <tr>
+                    <td style="color:#2980b9; font-weight:bold;">Blauw</td>
+                    <td><input type="range" name="brightness_b" id="brightness_b"
+                               min="0" max="255" value="{{ led_brightness.b }}"
+                               oninput="document.getElementById('val_b').textContent=this.value"
+                               style="width:200px;"></td>
+                    <td><span id="val_b">{{ led_brightness.b }}</span></td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <input type="submit" value="Opslaan &amp; Toepassen" class="save-button">
+    </form>
+
+    <br><br><br>
+
     <!-- OTA Firmware Update -->
-    <h2>6. OTA Firmware Update</h2>
+    <h2>7. OTA Firmware Update</h2>
     <form action="/upload_firmware" method="post" enctype="multipart/form-data">
         <label>Selecteer firmware .bin bestand:</label><br><br>
         <input type="file" name="firmware" accept=".bin" style="font-size:16px;">
