@@ -7,7 +7,10 @@
       "WebFetch(domain:10.10.8.160)",
       "Bash(pio run:*)",
       "Bash(/c/Users/Admin/.platformio/penv/Scripts/pio.exe run --target upload --upload-port COM4)",
-      "Bash(/c/Users/Admin/.platformio/penv/Scripts/pio.exe run -e seeed_xiao_esp32s3 --target upload --upload-port COM4)"
+      "Bash(/c/Users/Admin/.platformio/penv/Scripts/pio.exe run -e seeed_xiao_esp32s3 --target upload --upload-port COM4)",
+      "Bash(git config:*)",
+      "Bash(git remote add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }

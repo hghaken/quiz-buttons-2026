@@ -12,12 +12,13 @@ import io
 import base64
 
 # =========================================================================== VERSIE & CONFIG =====
-VERSION = "1.0.4"
+VERSION = "v1.0.5 (01-03-2026)"
 BUZZER_PIN = 17
 
 # Bestandspaden
 CONFIG_FILE          = '/home/game/quiz/config.json'
 PLAYER_NAMES_FILE    = '/home/game/quiz/player_names.json'
+PLAYER_COLORS_FILE   = '/home/game/quiz/player_colors.json'
 SCORES_FILE          = '/home/game/quiz/scores.json'
 CURRENT_ROUND_FILE   = '/home/game/quiz/current_round.json'
 ROUND_DESC_FILE      = '/home/game/quiz/round_descriptions.json'
@@ -42,6 +43,7 @@ def save_json(filepath, data):
 # =========================================================================== DATA LADEN =====
 config             = load_json(CONFIG_FILE, {})
 player_names       = load_json(PLAYER_NAMES_FILE, {})
+player_colors      = load_json(PLAYER_COLORS_FILE, {})
 scores             = load_json(SCORES_FILE, {})
 round_descriptions = load_json(ROUND_DESC_FILE, {})
 correct_answers    = load_json(CORRECT_ANSWERS_FILE, {})
@@ -74,6 +76,9 @@ def save_jokers():
 
 def save_correct_answers():
     save_json(CORRECT_ANSWERS_FILE, correct_answers)
+
+def save_player_colors():
+    save_json(PLAYER_COLORS_FILE, player_colors)
 
 def save_config():
     save_json(CONFIG_FILE, {
@@ -215,10 +220,6 @@ def on_message(client, userdata, msg):
                     press_ids = [p[1] for p in presses]
                     for i, btn_id in enumerate(press_ids):
                         mqtt_client.publish(f"quiz/{btn_id}", f"rank:{i + 1}")
-                    # Disable all buttons that haven't pressed yet (red)
-                    for btn_id in registered:
-                        if btn_id not in press_ids:
-                            mqtt_client.publish(f"quiz/{btn_id}", "disable")
                     if len([p for p in presses if p[1] not in disabled]) == 1:
                         process_presses()
 
@@ -274,6 +275,7 @@ def results():
             remaining_time = 0
 
         player_totals = {id: sum(scores.get(id, {}).values()) for id in reg_list}
+        press_timestamps = {p[1]: p[0] for p in presses}
         sorted_reg_list = [id for id in press_order if id in reg_list] + sorted([id for id in reg_list if id not in press_order], key=lambda id: player_names.get(id, id).lower())
 
     return render_template('results.html',
@@ -285,7 +287,9 @@ def results():
                            max_latency=max_latency,
                            offline_status=offline_status,
                            player_names=player_names,
+                           player_colors=player_colors,
                            player_totals=player_totals,
+                           press_timestamps=press_timestamps,
                            remaining_time=remaining_time,
                            presses=presses,
                            current_round=current_round,
@@ -430,12 +434,9 @@ def reset_round():
 ##### RESULTS.HTML - BUTTON RESET ALLE SCORES #####
 @app.route('/reset_scores', methods=['POST'])
 def reset_scores():
-    global scores, correct_answers, jokers, current_questions_completed, current_round, current_question_started, current_question_has_winner
+    global scores, correct_answers, jokers, current_questions_completed, current_round, current_question_started, current_question_has_winner, answer_end_time
     buzz_quizmaster(0.1)
     with lock:
-        #scores = {id: {} for id in registered}
-        #correct_answers = {id: {} for id in registered}
-        #jokers = {id: None for id in registered}
         current_questions_completed = 0
         current_question_started = False
         current_question_has_winner = False
@@ -443,7 +444,9 @@ def reset_scores():
         correct_answers = {}
         jokers = {}
         current_round = 1
-        lock_buttons()
+        answer_end_time = None
+        clear_round_state()
+        unlock_buttons()
         save_scores()
         save_correct_answers()
         save_jokers()
@@ -512,6 +515,7 @@ def setup_page():
                            round_descriptions=round_descriptions,
                            registered=sorted_registered,
                            player_names=player_names,
+                           player_colors=player_colors,
                            button_versions=button_versions,
                            button_ips=button_ips,
                            version=VERSION)
@@ -562,7 +566,11 @@ def set_player_names():
                 player_names[id] = name
             elif id in player_names:
                 del player_names[id]
+            color = request.form.get(f'color_{id}', '').strip()
+            if color:
+                player_colors[id] = color
     save_json(PLAYER_NAMES_FILE, player_names)
+    save_player_colors()
     return redirect(url_for('setup_page'))
 
 

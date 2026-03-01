@@ -85,6 +85,7 @@
                 <tr>
                     <th>Button ID</th>
                     <th>Naam (bijv. Heye, Team Rood, Speler 1...)</th>
+                    <th>Kleur</th>
                 </tr>
             </thead>
             <tbody>
@@ -96,6 +97,12 @@
                                name="name_{{ id }}"
                                value="{{ player_names.get(id, '') }}"
                                placeholder="Naam invoeren...">
+                    </td>
+                    <td>
+                        <input type="text"
+                               name="color_{{ id }}"
+                               value="{{ player_colors.get(id, '') }}"
+                               placeholder="bijv. red, #e74c3c...">
                     </td>
                 </tr>
                 {% endfor %}

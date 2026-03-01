@@ -61,6 +61,7 @@
     <table>
       <thead>
         <tr>
+          <th>Kleur</th>
           <th>Speler / Team</th>
           <th>Status</th>
           <th>Positie</th>
@@ -77,6 +78,7 @@
         {% set current_answerer = press_order[0] if press_order else None %}
         {% for id in registered %}
           <tr>
+            <td>{{ player_colors.get(id, '') }}</td>
             <td>{{ player_names.get(id, id) }}</td>
             <td>{% if offline_status[id] %} Offline {% elif id in disabled %} Uitgeschakeld {% else %} Aktief {% endif %}</td>
             <td>
@@ -87,12 +89,7 @@
               {% endif %}
             </td>
             <td>
-              {% set this_ts = 0 %}
-              {% for p in presses %}
-                {% if p[1] == id %}
-                  {% set this_ts = p[0] %}
-                {% endif %}
-              {% endfor %}
+              {% set this_ts = press_timestamps.get(id, 0) %}
               {{ ((this_ts - first_ts) * 1000) | int if this_ts > 0 else '-' }}
             </td>
             <td>

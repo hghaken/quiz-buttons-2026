@@ -70,6 +70,7 @@ The Pi runs a **Flask** web server that the quizmaster uses to manage the game.
 | Microcontroller | Seeed XIAO ESP32-S3 | One per player |
 | Button | Momentary push button | Connects D0 (GPIO1) to GND |
 | Buzzer | Active buzzer or piezo | Connects D1 (GPIO2) to GND |
+| Status LED | Single LED | D2 (GPIO3), MQTT connection indicator |
 | RGB LED | Common cathode RGB LED | D8/D9/D10 (GPIO7/8/9) |
 | Server | Raspberry Pi 4B | Runs MQTT broker + Flask |
 | Buzzer (Pi) | Active buzzer | GPIO17, confirms quizmaster actions |
@@ -82,6 +83,7 @@ The Pi runs a **Flask** web server that the quizmaster uses to manage the game.
 |---|---|---|
 | D0 | GPIO 1 | Button (INPUT_PULLUP → GND) |
 | D1 | GPIO 2 | Active buzzer (→ GND) |
+| D2 | GPIO 3 | Status LED (solid = MQTT connected, flash = disconnected) |
 | D8 | GPIO 7 | RED LED (PWM) |
 | D9 | GPIO 8 | GREEN LED (PWM) |
 | D10 | GPIO 9 | BLUE LED (PWM) |
@@ -201,7 +203,7 @@ Library: `knolleary/PubSubClient@^2.8`
 Edit the constants at the top of [src/main.cpp](src/main.cpp):
 
 ```cpp
-const char* version    = "v0.6 (22-02-2026)";
+const char* version    = "v0.8 (01-03-2026)";
 const char* ssid       = "your-wifi-ssid";
 const char* password   = "your-wifi-password";
 const char* mqttServer = "192.168.0.10";   // Raspberry Pi IP
@@ -273,6 +275,8 @@ After all rounds → "Quiz compleet!"
 
 ## LED Color Reference
 
+### RGB LED (game state)
+
 | Color | Meaning |
 |---|---|
 | Green | Button enabled / waiting for question |
@@ -280,11 +284,18 @@ After all rounds → "Quiz compleet!"
 | Blue | Rank 1 (buzzed in first) |
 | Cyan | Rank 2 (buzzed in second) |
 | Yellow | Rank 3 (buzzed in third) |
-| White | Rank 4+ (buzzed in but not top 3) / Time synced (startup) |
+| White | Rank 4+ (buzzed in but not top 3) |
 | Purple | OTA firmware downloading |
 
 **Startup sequence:**
 Green (init) → Red (WiFi connected) → White (NTP synced) → Blue (MQTT ready) + 1s beep
+
+### Status LED (D2 / GPIO3)
+
+| State | Meaning |
+|---|---|
+| Solid ON | MQTT connected |
+| Flashing (500ms) | MQTT disconnected, retrying every 5 s |
 
 ---
 
@@ -339,7 +350,7 @@ The main quizmaster dashboard. Auto-refreshes every 2 seconds.
 | 2 | Total number of rounds |
 | 3 | Number of questions per round |
 | 4 | Round descriptions (e.g. "Music Round", "General Knowledge") |
-| 5 | Player / team names per button |
+| 5 | Player / team names and display colors per button |
 | 6 | OTA firmware update (upload .bin + trigger update per button or all) |
 
 Also: Restart server, Shutdown Pi, software version display.
@@ -356,6 +367,7 @@ Quiz Buttons 2026/
 │   ├── server.py                 # Flask + MQTT quiz controller
 │   ├── config.json               # Game settings
 │   ├── player_names.json         # Button → name mapping
+│   ├── player_colors.json        # Button → display color mapping
 │   ├── scores.json               # Score data
 │   ├── correct_answers.json      # Correct answer counts
 │   ├── jokers.json               # Joker usage
@@ -381,8 +393,8 @@ Quiz Buttons 2026/
 
 | Component | Version | File |
 |---|---|---|
-| ESP32 Firmware | v0.6 (22-02-2026) | `src/main.cpp` |
-| Quiz Server | 1.0.4 | `raspberry_pi/server.py` |
+| ESP32 Firmware | v0.8 (01-03-2026) | `src/main.cpp` |
+| Quiz Server | v1.0.5 (01-03-2026) | `raspberry_pi/server.py` |
 
 Server version is displayed in the bottom-right corner of the Setup page.
 Per-button firmware version is reported via MQTT on connect and shown in the OTA table on the Setup page.

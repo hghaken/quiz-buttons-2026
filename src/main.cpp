@@ -1,15 +1,23 @@
+// RGB LED states:
 // setup():
-//                 INIT          (GREEN)
-//                 CONNECTED     (RED)
-//                 TIME SYNCED   (WHITE)
-//                 MQTT READY    (BLUE) + buzz
+//   GREEN   – Initialising
+//   RED     – WiFi connected
+//   WHITE   – NTP time synced
+//   BLUE    – MQTT connected and ready  + long buzz
 // loop():
-//                 Button enabled  (GREEN)
-//                 Button disabled (RED)
-//                 No MQTT         (blink WHITE, retry every 5 s)
-//                 OTA download    (PURPLE)
-//                 OTA done        (GREEN) → reboot
-//                 OTA error       (RED)
+//   GREEN   – Button enabled / unlocked
+//   RED     – Button disabled / locked
+//   BLUE    – Rank 1 (winner)
+//   CYAN    – Rank 2
+//   YELLOW  – Rank 3
+//   WHITE   – Rank 4+
+//   PURPLE  – OTA firmware downloading
+//   GREEN   – OTA done → reboot
+//   RED     – OTA error
+//
+// Status LED (D2):
+//   ON      – MQTT connected
+//   FLASH   – MQTT disconnected (retrying every 5 s)
 
 #include <Arduino.h>
 #include <WiFi.h>
@@ -19,14 +27,15 @@
 #include <esp_mac.h>  // For ESP.getEfuseMac()
 #include <time.h>     // For NTP sync
 
-#define BUTTON_PIN 1  // D0 GPIO 1 Momentary switch, connect to GND (internal pull-up)
-#define BUZZER_PIN 2  // D1 GPIO 2 Active buzzer or piezo, connect to GND
+#define BUTTON_PIN     1  // D0 GPIO 1 Momentary switch, connect to GND (internal pull-up)
+#define BUZZER_PIN     2  // D1 GPIO 2 Active buzzer or piezo, connect to GND
+#define STATUS_LED_PIN 3  // D2 GPIO 3 Connection status LED (solid=connected, flash=disconnected)
 
 #define RED_PIN   7   // D8  GPIO 7 PWM pin for RED LED
 #define GREEN_PIN 8   // D9  GPIO 8 PWM pin for GREEN LED
 #define BLUE_PIN  9   // D10 GPIO 9 PWM pin for BLUE LED
 
-const char* version    = "v0.6 (22-02-2026)";
+const char* version    = "v0.8 (01-03-2026)";
 const char* ssid       = "gamecontroller2.4";
 const char* password   = "gamecontroller";
 const char* mqttServer = "192.168.0.10";       // MQTT Controller IP address RPI 4B
@@ -178,8 +187,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
       client.publish("quiz/version",  (myId + "," + String(version) + "," + WiFi.localIP().toString()).c_str());
     } else if (msg == "lock") {
       enabled = false;
-      setColor(255, 0, 0);            // Red: locked
-      startBuzz(PAT_DISABLE);         // 3 beeps
+      if (!rankActive) setColor(255, 0, 0);  // Red: locked (skip if rank color active)
+      startBuzz(PAT_DISABLE);                // 3 beeps
     } else if (msg == "unlock") {
       rankActive = false;
       enabled = true;
@@ -194,8 +203,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
       startBuzz(PAT_ANSWER);          // 1 beep
     } else if (msg == "disable") {
       enabled = false;
-      setColor(255, 0, 0);            // Red: disabled
-      startBuzz(PAT_DISABLE);         // 3 beeps
+      if (!rankActive) setColor(255, 0, 0);  // Red: disabled (skip if rank color active)
+      startBuzz(PAT_DISABLE);                // 3 beeps
     } else if (msg == "enable") {
       rankActive = false;
       enabled = true;
@@ -224,6 +233,7 @@ bool mqttConnect() {
     client.publish("quiz/register", myId.c_str());
     client.publish("quiz/version",  (myId + "," + String(version) + "," + WiFi.localIP().toString()).c_str());
     setColor(0, 0, 255);  // Blue: connected
+    digitalWrite(STATUS_LED_PIN, HIGH);  // Solid: connected
     return true;
   }
   return false;
@@ -248,6 +258,8 @@ void setup() {
   pinMode(BUTTON_PIN, INPUT_PULLUP);
   pinMode(BUZZER_PIN, OUTPUT);
   digitalWrite(BUZZER_PIN, LOW);
+  pinMode(STATUS_LED_PIN, OUTPUT);
+  digitalWrite(STATUS_LED_PIN, LOW);
 
   ledcSetup(0, 5000, 8); ledcAttachPin(RED_PIN,   0);  // channel 0 → RED
   ledcSetup(1, 5000, 8); ledcAttachPin(GREEN_PIN, 1);  // channel 1 → GREEN
@@ -306,11 +318,11 @@ void loop() {
   client.loop();
 
   if (!client.connected()) {
-    // Blink white while disconnected
+    // Flash status LED while disconnected
     if (millis() - blinkMs >= 500) {
       blinkMs    = millis();
       blinkState = !blinkState;
-      setColor(blinkState ? 255 : 0, blinkState ? 255 : 0, blinkState ? 255 : 0);
+      digitalWrite(STATUS_LED_PIN, blinkState ? HIGH : LOW);
     }
     // Retry MQTT every 5 s – non-blocking, device stays fully responsive
     if (millis() - lastReconnectMs >= 5000) {
