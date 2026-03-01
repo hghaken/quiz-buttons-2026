@@ -35,7 +35,7 @@
 #define GREEN_PIN 8   // D9  GPIO 8 PWM pin for GREEN LED
 #define BLUE_PIN  9   // D10 GPIO 9 PWM pin for BLUE LED
 
-const char* version    = "v0.9 (01-03-2026)";
+const char* version    = "v0.10 (01-03-2026)";
 const char* ssid       = "gamecontroller2.4";
 const char* password   = "gamecontroller";
 const char* mqttServer = "192.168.0.10";       // MQTT Controller IP address RPI 4B
@@ -125,7 +125,6 @@ void updateBuzzer() {
 
 
 // ── HTTP OTA (blocking – called from MQTT callback) ───────────────────────────
-
 void performOTA() {
   client.disconnect();           // Clean MQTT disconnect before flashing
   buzPat = nullptr;              // Stop any active buzzer pattern
@@ -171,7 +170,6 @@ void performOTA() {
 
 
 // ── MQTT CALLBACK ─────────────────────────────────────────────────────────────
-
 void callback(char* topic, byte* payload, unsigned int length) {
   // Pre-allocate to avoid String reallocation during append
   String msg;
@@ -181,7 +179,9 @@ void callback(char* topic, byte* payload, unsigned int length) {
   // strcmp avoids heap allocation from constructing String(topic) on each call
   if (strcmp(topic, allTopic.c_str()) == 0) {
     if (msg == "reset") {
-      startBuzz(PAT_RESET);           // 2 beeps
+      digitalWrite(BUZZER_PIN, HIGH); delay(200); digitalWrite(BUZZER_PIN, LOW);
+      delay(100);
+      ESP.restart();                  // Full reboot – same sequence as power-on
     } else if (msg == "reregister") {
       client.publish("quiz/register", myId.c_str());
       client.publish("quiz/version",  (myId + "," + String(version) + "," + WiFi.localIP().toString()).c_str());
@@ -226,7 +226,6 @@ void callback(char* topic, byte* payload, unsigned int length) {
 
 
 // ── MQTT CONNECT (non-blocking helper) ────────────────────────────────────────
-
 bool mqttConnect() {
   if (client.connect(myId.c_str(), "quiz/offline", 1, false, myId.c_str())) {
     client.subscribe(allTopic.c_str());
@@ -242,7 +241,6 @@ bool mqttConnect() {
 
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
-
 String getUniqueId() {
   uint64_t mac = ESP.getEfuseMac();
   char id[17];
@@ -252,7 +250,6 @@ String getUniqueId() {
 
 
 // ── SETUP ─────────────────────────────────────────────────────────────────────
-
 void setup() {
   Serial.begin(115200);
 
@@ -313,7 +310,6 @@ void setup() {
 
 
 // ── MAIN LOOP ─────────────────────────────────────────────────────────────────
-
 void loop() {
   updateBuzzer();  // Drive non-blocking buzzer state machine
   client.loop();
