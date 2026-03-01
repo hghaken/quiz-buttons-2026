@@ -450,7 +450,7 @@ def reset_scores():
         current_round = 1
         answer_end_time = None
         clear_round_state()
-        unlock_buttons()
+        lock_buttons()
         save_scores()
         save_correct_answers()
         save_jokers()
