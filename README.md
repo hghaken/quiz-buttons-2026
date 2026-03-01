@@ -317,7 +317,7 @@ After all rounds → "Quiz compleet!"
 | Green | Button enabled / waiting for question |
 | Red | Button disabled / locked |
 | Blue | Rank 1 (buzzed in first) |
-| Orange | Rank 2 (buzzed in second) |
+| Purple | Rank 2 (buzzed in second) |
 | Yellow | Rank 3 (buzzed in third) |
 | White | Rank 4+ (buzzed in but not top 3) |
 | Purple | OTA firmware downloading |
