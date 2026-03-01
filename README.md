@@ -72,6 +72,8 @@ The Pi runs a **Flask** web server that the quizmaster uses to manage the game.
 | Buzzer | Active buzzer or piezo | Connects D1 (GPIO2) to GND |
 | Status LED | Single LED | D2 (GPIO3), MQTT connection indicator |
 | RGB LED | Common cathode RGB LED | D8/D9/D10 (GPIO7/8/9) |
+| Battery | 3.7V 10000mAh 1260110 Li-ion Polymer Battery | Rechargeable LiPo, one per button |
+| Charger / Boost | LX-LCBST TP4056 Module | Li-ion charger + DC-DC step-up boost (3.7V → 5V for ESP32) |
 | Server | Raspberry Pi 4B | Runs MQTT broker + Flask |
 | Buzzer (Pi) | Active buzzer | GPIO17, confirms quizmaster actions |
 
