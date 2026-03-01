@@ -35,7 +35,7 @@
 #define GREEN_PIN 8   // D9  GPIO 8 PWM pin for GREEN LED
 #define BLUE_PIN  9   // D10 GPIO 9 PWM pin for BLUE LED
 
-const char* version    = "v0.8 (01-03-2026)";
+const char* version    = "v0.9 (01-03-2026)";
 const char* ssid       = "gamecontroller2.4";
 const char* password   = "gamecontroller";
 const char* mqttServer = "192.168.0.10";       // MQTT Controller IP address RPI 4B
@@ -202,9 +202,10 @@ void callback(char* topic, byte* payload, unsigned int length) {
     if (msg == "buzz") {
       startBuzz(PAT_ANSWER);          // 1 beep
     } else if (msg == "disable") {
+      rankActive = false;            // Always override rank color on explicit disable
       enabled = false;
-      if (!rankActive) setColor(255, 0, 0);  // Red: disabled (skip if rank color active)
-      startBuzz(PAT_DISABLE);                // 3 beeps
+      setColor(255, 0, 0);           // Red: disabled
+      startBuzz(PAT_DISABLE);        // 3 beeps
     } else if (msg == "enable") {
       rankActive = false;
       enabled = true;
