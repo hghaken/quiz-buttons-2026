@@ -295,6 +295,7 @@ def results():
                            player_totals=player_totals,
                            press_timestamps=press_timestamps,
                            remaining_time=remaining_time,
+                           answer_timeout=ANSWER_TIMEOUT,
                            presses=presses,
                            current_round=current_round,
                            total_rounds=TOTAL_ROUNDS,

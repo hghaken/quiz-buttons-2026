@@ -53,9 +53,11 @@
     </div>
 
     <!-- COUNTDOWN TELLER -->
+    {% if answer_timeout > 0 %}
     <div class="countdown" id="countdown">
         Countdown: {{ remaining_time }}
     </div>
+    {% endif %}
 
     <!-- TABEL -->
     <table>
@@ -155,6 +157,7 @@
     <a href="/setup" class="setup-button">Setup</a>
 
     <!-- -->
+    {% if answer_timeout > 0 %}
     <script>
         let timeLeft = {{ remaining_time }};
         function updateCountdown() {
@@ -173,6 +176,7 @@
         setInterval(updateCountdown, 1000);
         updateCountdown();  // Initial display
     </script>
+    {% endif %}
 
   </body>
 </html>
