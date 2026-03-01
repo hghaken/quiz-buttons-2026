@@ -8,7 +8,7 @@
 //   GREEN   – Button enabled / unlocked
 //   RED     – Button disabled / locked
 //   BLUE    – Rank 1 (winner)
-//   CYAN    – Rank 2
+//   ORANGE  – Rank 2
 //   YELLOW  – Rank 3
 //   WHITE   – Rank 4+
 //   PURPLE  – OTA firmware downloading
@@ -35,7 +35,7 @@
 #define GREEN_PIN 8   // D9  GPIO 8 PWM pin for GREEN LED
 #define BLUE_PIN  9   // D10 GPIO 9 PWM pin for BLUE LED
 
-const char* version    = "v0.10 (01-03-2026)";
+const char* version    = "v0.11 (01-03-2026)";
 const char* ssid       = "gamecontroller2.4";
 const char* password   = "gamecontroller";
 const char* mqttServer = "192.168.0.10";       // MQTT Controller IP address RPI 4B
@@ -100,6 +100,7 @@ const uint16_t* buzPat  = nullptr;
 int             buzStep = 0;
 unsigned long   buzMs   = 0;
 
+// ── Start Buzzer On ───────────────────────────
 void startBuzz(const uint16_t* pat) {
   buzPat  = pat;
   buzStep = 0;
@@ -107,6 +108,8 @@ void startBuzz(const uint16_t* pat) {
   digitalWrite(BUZZER_PIN, HIGH);
 }
 
+
+// ── Update Buzzer (Non Blocking) ───────────────────────────
 void updateBuzzer() {
   if (!buzPat) return;
   if (millis() - buzMs < (unsigned long)buzPat[buzStep]) return;
@@ -217,7 +220,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
       rankActive = true;              // Hold rank color until next enable/disable
       int rank = msg.substring(5).toInt();
       if      (rank == 1) setColor(0,   0,   255); // Blue   – rank 1
-      else if (rank == 2) setColor(0,   255, 255); // Cyan   – rank 2
+      else if (rank == 2) setColor(255, 128,   0); // Orange – rank 2
       else if (rank == 3) setColor(255, 255, 0);   // Yellow – rank 3
       else                setColor(255, 255, 255); // White  – rank > 3
     }
