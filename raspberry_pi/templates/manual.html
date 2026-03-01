@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% if manual_lang == 'nl' %}Speler Handleiding{% else %}Player Manual{% endif %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .manual-body {
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        .lang-switcher {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        .lang-switcher a {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: 6px;
+            border: 2px solid #bbb;
+            color: #555;
+        }
+        .lang-switcher a.active {
+            background-color: #2196F3;
+            border-color: #2196F3;
+            color: white;
+        }
+        .manual-body h1 {
+            font-size: 2em;
+            margin-bottom: 4px;
+        }
+        .manual-body h2 {
+            font-size: 1.25em;
+            color: #2196F3;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 4px;
+            margin-top: 36px;
+        }
+        .manual-body h3 {
+            font-size: 1.05em;
+            margin-top: 20px;
+            margin-bottom: 4px;
+            color: #333;
+        }
+        .manual-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 14px 0;
+        }
+        .manual-body th {
+            background-color: #f0f0f0;
+            text-align: left;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+        }
+        .manual-body td {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            vertical-align: middle;
+        }
+        .manual-body tr:nth-child(even) td {
+            background-color: #fafafa;
+        }
+        .led-dot {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+            border: 1px solid rgba(0,0,0,0.15);
+        }
+        .tip-box {
+            background-color: #e8f4fd;
+            border-left: 4px solid #2196F3;
+            padding: 10px 16px;
+            margin: 12px 0;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.95em;
+        }
+        .tip-box.orange {
+            background-color: #fff8e1;
+            border-left-color: #ffa000;
+        }
+        .step-num {
+            display: inline-block;
+            background: #2196F3;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            text-align: center;
+            line-height: 24px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .result-correct {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+        .result-wrong {
+            color: #c62828;
+            font-weight: bold;
+        }
+        .footer-note {
+            text-align: center;
+            margin-top: 48px;
+            font-size: 1.3em;
+            color: #555;
+        }
+        @media print {
+            .lang-switcher { display: none; }
+            .back-btn { display: none; }
+            body { background: white; border: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="manual-body">
+
+    <div class="lang-switcher">
+        <a href="/manual?lang=nl" class="{% if manual_lang == 'nl' %}active{% endif %}">🇳🇱 Nederlands</a>
+        <a href="/manual?lang=en" class="{% if manual_lang == 'en' %}active{% endif %}">🇬🇧 English</a>
+    </div>
+
+    {% if manual_lang == 'nl' %}
+    <!-- ========================================================== DUTCH ===== -->
+
+    <h1>Quiz Knop — Speler Handleiding</h1>
+    <hr>
+
+    <h2>Jouw knop</h2>
+    <p>Elke speler heeft een draadloze quiz-knop met:</p>
+    <ul>
+        <li>Een grote <strong>drukknop</strong> bovenop</li>
+        <li>Een <strong>RGB LED</strong> die aangeeft wat de status van jouw knop is</li>
+        <li>Een <strong>zoemer</strong> die geluid geeft bij belangrijke momenten</li>
+        <li>Een <strong>oplaadbare batterij</strong> (USB-C aansluiting)</li>
+    </ul>
+
+    <h2>LED Kleuren</h2>
+    <p>De kleur van het lampje vertelt je precies wat er aan de hand is.</p>
+    <table>
+        <thead><tr><th>Kleur</th><th>Betekenis</th></tr></thead>
+        <tbody>
+            <tr><td><span class="led-dot" style="background:#4CAF50;"></span> Groen</td><td>Knop is actief — je kunt buzzen!</td></tr>
+            <tr><td><span class="led-dot" style="background:#e53935;"></span> Rood</td><td>Knop is uitgeschakeld — wachten</td></tr>
+            <tr><td><span class="led-dot" style="background:#1565C0;"></span> Blauw</td><td>Jij was de <strong>eerste</strong> die drukte</td></tr>
+            <tr><td><span class="led-dot" style="background:#7b1fa2;"></span> Paars</td><td>Jij was de <strong>tweede</strong> die drukte</td></tr>
+            <tr><td><span class="led-dot" style="background:#f9a825;"></span> Geel</td><td>Jij was de <strong>derde</strong> die drukte</td></tr>
+            <tr><td><span class="led-dot" style="background:#ddd; border:1px solid #aaa;"></span> Wit</td><td>Jij drukte ook, maar later (4e of verder)</td></tr>
+        </tbody>
+    </table>
+    <div class="tip-box">💡 <strong>Tip:</strong> Hoe eerder je drukt, hoe eerder je mag antwoorden!</div>
+
+    <h2>Zoemer Signalen</h2>
+    <table>
+        <thead><tr><th>Signaal</th><th>Betekenis</th></tr></thead>
+        <tbody>
+            <tr><td>1 korte piep</td><td>Je buzz is geregistreerd</td></tr>
+            <tr><td>2 piepen</td><td>De ronde is gereset — knop weer actief</td></tr>
+            <tr><td>3 piepen</td><td>Jouw knop is uitgeschakeld (fout antwoord)</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Hoe werkt het spel?</h2>
+
+    <h3><span class="step-num">1</span> Wachten op de vraag</h3>
+    <p>De quizmaster stelt de vraag. Jouw LED is <strong style="color:#e53935;">rood</strong> — nog niet drukken.</p>
+
+    <h3><span class="step-num">2</span> Knop groen!</h3>
+    <p>Zodra de LED <strong style="color:#4CAF50;">groen</strong> wordt, mag je buzzen. Weet je het antwoord? <strong>Druk de knop!</strong></p>
+
+    <h3><span class="step-num">3</span> Buzz geregistreerd</h3>
+    <p>Je hoort <strong>1 piep</strong> en je LED toont jouw rangkleur:<br>
+    Blauw = 1e &nbsp;|&nbsp; Paars = 2e &nbsp;|&nbsp; Geel = 3e &nbsp;|&nbsp; Wit = 4e of later</p>
+
+    <h3><span class="step-num">4</span> Antwoorden</h3>
+    <p>De <strong>eerste</strong> speler (blauwe LED) geeft het antwoord.</p>
+    <p><span class="result-correct">✔ Antwoord goed</span> → De quizmaster geeft punten. De vraag is klaar.</p>
+    <p><span class="result-wrong">✘ Antwoord fout</span> → Jouw knop wordt rood (3 piepen). De <strong>volgende</strong> speler in de rij mag antwoorden.</p>
+
+    <h3><span class="step-num">5</span> Niemand weet het</h3>
+    <p>Als niemand het goed heeft, resettet de quizmaster de ronde. Je hoort <strong>2 piepen</strong> en je LED wordt weer groen — klaar voor de volgende vraag.</p>
+    <div class="tip-box orange">⚠️ Spelers met een fout antwoord blijven rood voor die vraag, maar mogen bij de <em>volgende</em> vraag gewoon weer meedoen.</div>
+
+    <h2>Punten</h2>
+    <p>De quizmaster kent <strong>1</strong>, <strong>2</strong> of <strong>3</strong> punten toe per vraag, afhankelijk van de moeilijkheid. Jouw score is live te zien op het scorebord.</p>
+
+    <h2>De Joker 🃏</h2>
+    <p>Elke speler heeft <strong>één joker</strong> voor het hele spel.</p>
+    <ul>
+        <li>De joker <strong>verdubbelt al jouw punten</strong> voor een hele ronde</li>
+        <li>Je kunt hem alleen inzetten <strong>vóór de eerste vraag</strong> van een ronde</li>
+        <li>Gebruik hem slim — kies de ronde waar jij het sterkst bent!</li>
+    </ul>
+    <div class="tip-box">💡 <strong>Voorbeeld:</strong> Joker inzetten in de muziekronde als je veel van muziek weet = extra beloning voor elk goed antwoord in die ronde.</div>
+
+    <h2>Opstarten</h2>
+    <p>Wanneer de knop wordt aangezet doorloopt hij een korte reeks:</p>
+    <table>
+        <thead><tr><th>LED kleur</th><th>Wat er gebeurt</th></tr></thead>
+        <tbody>
+            <tr><td><span class="led-dot" style="background:#4CAF50;"></span> Groen</td><td>Knop start op</td></tr>
+            <tr><td><span class="led-dot" style="background:#e53935;"></span> Rood</td><td>Verbinding met WiFi gemaakt</td></tr>
+            <tr><td><span class="led-dot" style="background:#ddd; border:1px solid #aaa;"></span> Wit</td><td>Tijd wordt gesynchroniseerd</td></tr>
+            <tr><td><span class="led-dot" style="background:#1565C0;"></span> Blauw + lange piep</td><td>Verbonden met de quiz server — klaar!</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Tips</h2>
+    <ul>
+        <li><strong>Druk alleen als je het antwoord weet</strong> — een fout antwoord blokkeert jou en geeft anderen de kans.</li>
+        <li><strong>Wacht op groen</strong> — te vroeg drukken werkt niet (knop is nog rood).</li>
+        <li><strong>Joker op het juiste moment</strong> — gebruik hem in de ronde waar jij het sterkst bent.</li>
+        <li><strong>Knop valt uit?</strong> Vraag de quizmaster om "Alle knoppen zoeken" te klikken. Jouw knop meldt zich vanzelf opnieuw aan.</li>
+    </ul>
+
+    <h2>Opladen</h2>
+    <ul>
+        <li>Laad de knop op via de <strong>USB-C</strong> aansluiting.</li>
+        <li>De batterij is groot genoeg voor meerdere speelrondes — maar laad op na gebruik.</li>
+        <li>Laad <strong>niet</strong> op terwijl de knop in het spel is.</li>
+    </ul>
+
+    <p class="footer-note">Veel plezier en veel succes! 🎉</p>
+
+    {% else %}
+    <!-- ========================================================= ENGLISH ===== -->
+
+    <h1>Quiz Button — Player Manual</h1>
+    <hr>
+
+    <h2>Your Button</h2>
+    <p>Every player has a wireless quiz button with:</p>
+    <ul>
+        <li>A large <strong>push button</strong> on top</li>
+        <li>An <strong>RGB LED</strong> that shows the status of your button</li>
+        <li>A <strong>buzzer</strong> that gives audio feedback at key moments</li>
+        <li>A <strong>rechargeable battery</strong> (USB-C connector)</li>
+    </ul>
+
+    <h2>LED Colors</h2>
+    <p>The color of the LED tells you exactly what is happening.</p>
+    <table>
+        <thead><tr><th>Color</th><th>Meaning</th></tr></thead>
+        <tbody>
+            <tr><td><span class="led-dot" style="background:#4CAF50;"></span> Green</td><td>Button is active — you can buzz in!</td></tr>
+            <tr><td><span class="led-dot" style="background:#e53935;"></span> Red</td><td>Button is disabled — wait</td></tr>
+            <tr><td><span class="led-dot" style="background:#1565C0;"></span> Blue</td><td>You were the <strong>first</strong> to press</td></tr>
+            <tr><td><span class="led-dot" style="background:#7b1fa2;"></span> Purple</td><td>You were the <strong>second</strong> to press</td></tr>
+            <tr><td><span class="led-dot" style="background:#f9a825;"></span> Yellow</td><td>You were the <strong>third</strong> to press</td></tr>
+            <tr><td><span class="led-dot" style="background:#ddd; border:1px solid #aaa;"></span> White</td><td>You pressed too, but later (4th or beyond)</td></tr>
+        </tbody>
+    </table>
+    <div class="tip-box">💡 <strong>Tip:</strong> The earlier you press, the earlier you get to answer!</div>
+
+    <h2>Buzzer Signals</h2>
+    <table>
+        <thead><tr><th>Signal</th><th>Meaning</th></tr></thead>
+        <tbody>
+            <tr><td>1 short beep</td><td>Your buzz has been registered</td></tr>
+            <tr><td>2 beeps</td><td>The round was reset — button is active again</td></tr>
+            <tr><td>3 beeps</td><td>Your button has been disabled (wrong answer)</td></tr>
+        </tbody>
+    </table>
+
+    <h2>How Does the Game Work?</h2>
+
+    <h3><span class="step-num">1</span> Wait for the question</h3>
+    <p>The quizmaster reads the question. Your LED is <strong style="color:#e53935;">red</strong> — do not press yet.</p>
+
+    <h3><span class="step-num">2</span> Button turns green!</h3>
+    <p>As soon as the LED turns <strong style="color:#4CAF50;">green</strong>, you may buzz in. Know the answer? <strong>Press the button!</strong></p>
+
+    <h3><span class="step-num">3</span> Buzz registered</h3>
+    <p>You hear <strong>1 beep</strong> and your LED shows your rank color:<br>
+    Blue = 1st &nbsp;|&nbsp; Purple = 2nd &nbsp;|&nbsp; Yellow = 3rd &nbsp;|&nbsp; White = 4th or later</p>
+
+    <h3><span class="step-num">4</span> Answer the question</h3>
+    <p>The <strong>first</strong> player (blue LED) gives their answer.</p>
+    <p><span class="result-correct">✔ Answer correct</span> → The quizmaster awards points. The question is done.</p>
+    <p><span class="result-wrong">✘ Answer wrong</span> → Your button turns red (3 beeps). The <strong>next</strong> player in line gets to answer.</p>
+
+    <h3><span class="step-num">5</span> Nobody knows it</h3>
+    <p>If nobody answers correctly, the quizmaster resets the round. You hear <strong>2 beeps</strong> and your LED turns green again — ready for the next question.</p>
+    <div class="tip-box orange">⚠️ Players who gave a wrong answer stay red for that question, but can buzz in again on the <em>next</em> question.</div>
+
+    <h2>Points</h2>
+    <p>The quizmaster awards <strong>1</strong>, <strong>2</strong> or <strong>3</strong> points per question, depending on difficulty. Your score is shown live on the scoreboard.</p>
+
+    <h2>The Joker 🃏</h2>
+    <p>Every player has <strong>one joker</strong> for the entire game.</p>
+    <ul>
+        <li>The joker <strong>doubles all your points</strong> for an entire round</li>
+        <li>You can only use it <strong>before the first question</strong> of a round</li>
+        <li>Use it wisely — pick the round where you think you will score best!</li>
+    </ul>
+    <div class="tip-box">💡 <strong>Example:</strong> Using your joker in the music round when you know a lot about music = extra reward for every correct answer in that round.</div>
+
+    <h2>Startup Sequence</h2>
+    <p>When the button is switched on it runs through a short sequence:</p>
+    <table>
+        <thead><tr><th>LED Color</th><th>What is happening</th></tr></thead>
+        <tbody>
+            <tr><td><span class="led-dot" style="background:#4CAF50;"></span> Green</td><td>Button is starting up</td></tr>
+            <tr><td><span class="led-dot" style="background:#e53935;"></span> Red</td><td>Connected to WiFi</td></tr>
+            <tr><td><span class="led-dot" style="background:#ddd; border:1px solid #aaa;"></span> White</td><td>Time is being synchronized</td></tr>
+            <tr><td><span class="led-dot" style="background:#1565C0;"></span> Blue + long beep</td><td>Connected to the quiz server — ready!</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Tips</h2>
+    <ul>
+        <li><strong>Only press if you know the answer</strong> — a wrong answer blocks you and gives others a chance.</li>
+        <li><strong>Wait for green</strong> — pressing too early does nothing (button is still red).</li>
+        <li><strong>Joker timing matters</strong> — use it in the round where you are strongest.</li>
+        <li><strong>Button disconnected?</strong> Ask the quizmaster to click "Find all buttons". Your button will automatically reconnect.</li>
+    </ul>
+
+    <h2>Charging</h2>
+    <ul>
+        <li>Charge the button using the <strong>USB-C</strong> connector.</li>
+        <li>The battery is large enough for multiple game sessions — but charge it after use.</li>
+        <li>Do <strong>not</strong> charge while the button is actively in a game.</li>
+    </ul>
+
+    <p class="footer-note">Good luck and have fun! 🎉</p>
+
+    {% endif %}
+
+    <br><br>
+    <button class="bottom-left-button" onclick="window.location.href='/'" style="margin-bottom:40px;">← {% if manual_lang == 'nl' %}Terug naar Resultaten{% else %}Back to Results{% endif %}</button>
+
+</div>
+</body>
+</html>

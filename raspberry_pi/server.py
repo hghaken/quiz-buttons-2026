@@ -659,6 +659,14 @@ def ota_update():
     return redirect(url_for('setup_page'))
 
 
+@app.route('/manual')
+def player_manual():
+    lang = request.args.get('lang', config.get('language', 'nl'))
+    if lang not in ('nl', 'en'):
+        lang = 'nl'
+    return render_template('manual.html', manual_lang=lang)
+
+
 @app.route('/restart', methods=['POST'])
 def restart_server():
     def do_restart():
