@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Score Overview</title>
+    <title>{{ t.score.page_title }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Score Overzicht</h1>
+    <h1>{{ t.score.heading }}</h1>
 
     <table>
         <thead>
             <tr>
-                <th>Team</th>
+                <th>{{ t.score.col_team }}</th>
                 {% for r in range(1, total_rounds + 1) %}
-                <th colspan="2">Ronde {{ r }}<br><small>{{ round_descriptions.get(r|string, '') }}</small></th>
+                <th colspan="2">{{ t.score.col_round }} {{ r }}<br><small>{{ round_descriptions.get(r|string, '') }}</small></th>
                 {% endfor %}
-                <th>Total</th>
-                <th>Joker</th>
+                <th>{{ t.score.col_total }}</th>
+                <th>{{ t.score.col_joker }}</th>
             </tr>
             <tr>
                 <th></th>  <!-- Empty for player name -->
                 {% for r in range(1, total_rounds + 1) %}
-                <th class="numeric-center">Pnt</th>
-                <th class="numeric-center">Cor</th> 
+                <th class="numeric-center">{{ t.score.col_points }}</th>
+                <th class="numeric-center">{{ t.score.col_correct }}</th>
                 {% endfor %}
                 <th class="numeric-center"></th>
                 <th></th>
@@ -32,11 +32,11 @@
             <tr>
                 <td>{{ player_names.get(id, id) }}</td>
                 {% for r in range(1, total_rounds + 1) %}
-                <td class="numeric-center">{{ scores.get(id, {}).get(r|string, 0) }}</td>  <!-- NEW: Centered points -->
-                <td class="numeric-center">{{ correct_answers.get(id, {}).get(r|string, 0) }}</td>  <!-- NEW: Centered corrects -->
+                <td class="numeric-center">{{ scores.get(id, {}).get(r|string, 0) }}</td>
+                <td class="numeric-center">{{ correct_answers.get(id, {}).get(r|string, 0) }}</td>
                 {% endfor %}
-                <td class="numeric-center">{{ total }}</td>  <!-- NEW: Centered total -->
-                <td>{{ jokers.get(id, 'Not Used') }}</td>  <!-- Joker left-align for text -->
+                <td class="numeric-center">{{ total }}</td>
+                <td>{{ jokers.get(id) or t.score.joker_not_used }}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -47,12 +47,8 @@
 
     <br><br>
 
-    <!--    <a href="/" class="back-link">← Terug naar Resultaten</a> -->
+    <button class="bottom-left-button" onclick="window.location.href='/'">{{ t.common.back_to_results }}</button>
 
-    <button class="bottom-left-button" onclick="window.location.href='/'">← Terug naar Resultaten</button>
-
-    <a href="/setup" class="setup-button">Setup</a>
+    <a href="/setup" class="setup-button">{{ t.common.setup_link }}</a>
 </body>
 </html>
-
-

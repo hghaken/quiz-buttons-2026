@@ -1,55 +1,69 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Quiz Setup</title>
+    <title>{{ t.setup.page_title }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Quiz Setup</h1>
+    <h1>{{ t.setup.heading }}</h1>
+
+    <!-- Language -->
+    <h2>{{ t.setup.lang_section }}</h2>
+    <form action="/set_language" method="post">
+        <label>{{ t.setup.lang_label }}</label><br><br>
+        <select name="language" style="padding:8px; font-size:16px;">
+            <option value="nl" {% if language == 'nl' %}selected{% endif %}>{{ t.setup.lang_nl }}</option>
+            <option value="en" {% if language == 'en' %}selected{% endif %}>{{ t.setup.lang_en }}</option>
+        </select>
+        &nbsp;
+        <input type="submit" value="{{ t.setup.btn_save_language }}" class="save-button">
+    </form>
+
+    <br><br>
 
     <!-- Answer Timeout -->
-    <h2>1. Answer Timeout</h2>
+    <h2>{{ t.setup.section1 }}</h2>
     <form action="/set_timeout" method="post">
-        <label for="timeout">Timeout na buzz (seconden, 0 = uitgeschakeld):</label><br><br>
+        <label for="timeout">{{ t.setup.timeout_label }}</label><br><br>
         <input type="number" name="timeout" id="timeout"
                value="{{ current_timeout }}" min="0"
                style="padding:8px; font-size:16px; width:100px;">
         <br><br>
-        <input type="submit" value="Opslaan" class="save-button">
+        <input type="submit" value="{{ t.setup.btn_save_timeout }}" class="save-button">
     </form>
 
     <br><br>
 
     <!-- Total Rounds -->
-    <h2>2. Total Rounds</h2>
+    <h2>{{ t.setup.section2 }}</h2>
     <form action="/set_total_rounds" method="post">
-        <label for="total_rounds">Aantal rondes:</label><br><br>
+        <label for="total_rounds">{{ t.setup.rounds_label }}</label><br><br>
         <input type="number" name="total_rounds" id="total_rounds" value="{{ total_rounds }}" min="1" style="padding:8px; font-size:16px;">
         <br><br>
-        <input type="submit" value="Opslaan" class="save-button">
+        <input type="submit" value="{{ t.setup.btn_save_rounds }}" class="save-button">
     </form>
     <br><br>
 
     <!-- Aantal vragen per ronde -->
-    <h2>3. Aantal vragen per ronde</h2>
+    <h2>{{ t.setup.section3 }}</h2>
     <form action="/set_questions_per_round" method="post">
-        <label for="questions_per_round">Vragen per ronde:</label><br><br>
-        <input type="number" name="questions_per_round" id="questions_per_round" 
+        <label for="questions_per_round">{{ t.setup.qpr_label }}</label><br><br>
+        <input type="number" name="questions_per_round" id="questions_per_round"
                value="{{ questions_per_round }}" min="1" style="padding:8px; font-size:16px;">
         <br><br>
-        <input type="submit" value="Opslaan" class="save-button">
+        <input type="submit" value="{{ t.setup.btn_save_qpr }}" class="save-button">
     </form>
     <br><br>
 
 
     <!-- Round Descriptions -->
-    <h2>4. Ronde Omschrijvingen</h2>
+    <h2>{{ t.setup.section4 }}</h2>
     <form method="post" action="/set_round_descriptions">
         <table>
             <thead>
                 <tr>
-                    <th>Ronde Nummer</th>
-                    <th>Omschrijving (bijv. Muziekronde, Algemene Kennis...)</th>
+                    <th>{{ t.setup.col_round_num }}</th>
+                    <th>{{ t.setup.col_round_desc }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -57,30 +71,30 @@
                 <tr>
                     <td>{{ i }}</td>
                     <td>
-                        <input type="text" 
-                               name="desc_{{ i }}" 
-                               value="{{ round_descriptions.get(i|string, '') }}" 
-                               placeholder="Omschrijving invoeren...">
+                        <input type="text"
+                               name="desc_{{ i }}"
+                               value="{{ round_descriptions.get(i|string, '') }}"
+                               placeholder="{{ t.setup.placeholder_desc }}">
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         <br>
-        <input type="submit" value="Omschrijvingen Opslaan" class="save-button">
+        <input type="submit" value="{{ t.setup.btn_save_descriptions }}" class="save-button">
     </form>
 
     <br><br>
 
     <!-- Speler Namen -->
-    <h2>5. Speler Namen Toewijzen</h2>
+    <h2>{{ t.setup.section5 }}</h2>
     <form method="post" action="/set_player_names">
         <table>
             <thead>
                 <tr>
-                    <th>Button ID</th>
-                    <th>Naam (bijv. Heye, Team Rood, Speler 1...)</th>
-                    <th>Kleur</th>
+                    <th>{{ t.setup.col_btn_id }}</th>
+                    <th>{{ t.setup.col_player_name }}</th>
+                    <th>{{ t.setup.col_color }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -91,34 +105,34 @@
                         <input type="text"
                                name="name_{{ id }}"
                                value="{{ player_names.get(id, '') }}"
-                               placeholder="Naam invoeren...">
+                               placeholder="{{ t.setup.placeholder_name }}">
                     </td>
                     <td>
                         <input type="text"
                                name="color_{{ id }}"
                                value="{{ player_colors.get(id, '') }}"
-                               placeholder="bijv. red, #e74c3c...">
+                               placeholder="{{ t.setup.placeholder_color }}">
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         <br>
-        <input type="submit" value="Namen Opslaan" class="save-button">
+        <input type="submit" value="{{ t.setup.btn_save_names }}" class="save-button">
     </form>
 
     <br><br><br>
 
     <!-- LED Helderheid -->
-    <h2>6. LED Helderheid (RGB Knoppen)</h2>
+    <h2>{{ t.setup.section6 }}</h2>
     <form action="/set_led_brightness" method="post">
         <table>
             <thead>
-                <tr><th>Kleur</th><th>Helderheid</th><th>Waarde</th></tr>
+                <tr><th>{{ t.setup.col_led_color }}</th><th>{{ t.setup.col_brightness }}</th><th>{{ t.setup.col_value }}</th></tr>
             </thead>
             <tbody>
                 <tr>
-                    <td style="color:#e74c3c; font-weight:bold;">Rood</td>
+                    <td style="color:#e74c3c; font-weight:bold;">{{ t.setup.led_red }}</td>
                     <td><input type="range" name="brightness_r" id="brightness_r"
                                min="0" max="255" value="{{ led_brightness.r }}"
                                oninput="document.getElementById('val_r').textContent=this.value"
@@ -126,7 +140,7 @@
                     <td><span id="val_r">{{ led_brightness.r }}</span></td>
                 </tr>
                 <tr>
-                    <td style="color:#27ae60; font-weight:bold;">Groen</td>
+                    <td style="color:#27ae60; font-weight:bold;">{{ t.setup.led_green }}</td>
                     <td><input type="range" name="brightness_g" id="brightness_g"
                                min="0" max="255" value="{{ led_brightness.g }}"
                                oninput="document.getElementById('val_g').textContent=this.value"
@@ -134,7 +148,7 @@
                     <td><span id="val_g">{{ led_brightness.g }}</span></td>
                 </tr>
                 <tr>
-                    <td style="color:#2980b9; font-weight:bold;">Blauw</td>
+                    <td style="color:#2980b9; font-weight:bold;">{{ t.setup.led_blue }}</td>
                     <td><input type="range" name="brightness_b" id="brightness_b"
                                min="0" max="255" value="{{ led_brightness.b }}"
                                oninput="document.getElementById('val_b').textContent=this.value"
@@ -144,28 +158,28 @@
             </tbody>
         </table>
         <br>
-        <input type="submit" value="Opslaan &amp; Toepassen" class="save-button">
+        <input type="submit" value="{{ t.setup.btn_save_brightness }}" class="save-button">
     </form>
 
     <br><br><br>
 
     <!-- OTA Firmware Update -->
-    <h2>7. OTA Firmware Update</h2>
+    <h2>{{ t.setup.section7 }}</h2>
     <form action="/upload_firmware" method="post" enctype="multipart/form-data">
-        <label>Selecteer firmware .bin bestand:</label><br><br>
+        <label>{{ t.setup.firmware_label }}</label><br><br>
         <input type="file" name="firmware" accept=".bin" style="font-size:16px;">
-        <input type="submit" value="Uploaden naar Pi" class="save-button">
+        <input type="submit" value="{{ t.setup.btn_upload }}" class="save-button">
     </form>
     <br>
     <form action="/ota_update" method="post">
         <input type="hidden" name="target" value="all">
-        <input type="submit" value="OTA Update — Alle Knoppen"
+        <input type="submit" value="{{ t.setup.btn_ota_all }}"
                class="restart-button"
-               onclick="return confirm('OTA update starten voor alle knoppen? Ze worden paars, dan groen en herstarten.');">
+               onclick="return confirm('{{ t.setup.confirm_ota_all }}');">
     </form>
     <br>
     <table>
-        <thead><tr><th>Naam</th><th>Firmware</th><th>IP</th><th>OTA</th></tr></thead>
+        <thead><tr><th>{{ t.setup.col_name }}</th><th>{{ t.setup.col_firmware }}</th><th>{{ t.setup.col_ip }}</th><th>{{ t.setup.col_ota }}</th></tr></thead>
         <tbody>
             {% for id in registered %}
             <tr>
@@ -175,7 +189,7 @@
                 <td>
                     <form action="/ota_update" method="post" style="display:inline;">
                         <input type="hidden" name="target" value="{{ id }}">
-                        <input type="submit" value="OTA">
+                        <input type="submit" value="{{ t.setup.col_ota }}">
                     </form>
                 </td>
             </tr>
@@ -187,40 +201,35 @@
 
     <!-- Actie knoppen -->
     <form id="restart-form" action="/restart" method="post">
-        <input type="button" value="Restart Quiz Server" class="restart-button" onclick="restartAndRedirect()">
+        <input type="button" value="{{ t.setup.btn_restart }}" class="restart-button" onclick="restartAndRedirect()">
     </form>
 
     <form id="shutdown-form" action="/shutdown" method="post">
-        <input type="button" value="Shutdown Raspberry Pi" class="shutdown-button" onclick="shutdownAndRedirect()">
+        <input type="button" value="{{ t.setup.btn_shutdown }}" class="shutdown-button" onclick="shutdownAndRedirect()">
     </form>
 
     <br><br><br>
-    <button class="bottom-left-button" onclick="window.location.href='/'">← Terug naar Resultaten</button>
+    <button class="bottom-left-button" onclick="window.location.href='/'">{{ t.common.back_to_results }}</button>
 
-    <!-- NEW: Display software version -->
-    <div class="version-footer">Software Versie: {{ version }}</div>
+    <!-- Display software version -->
+    <div class="version-footer">{{ t.setup.version_prefix }} {{ version }}</div>
 
     <script>
 function restartAndRedirect() {
-    if (confirm('Weet je zeker dat je de server wilt herstarten?')) {
+    if (confirm('{{ t.setup.confirm_restart }}')) {
         document.getElementById('restart-form').submit();
         setTimeout(function() {
             window.location.href = '/';
-        }, 8000);  // Wacht 8 seconden, dan terug naar hoofdpagina
+        }, 8000);
     }
 }
 
-
-
-
-
     function shutdownAndRedirect() {
-       if (confirm('Weet je zeker dat je de Raspberry Pi wilt afsluiten?')) {
+       if (confirm('{{ t.setup.confirm_shutdown }}')) {
         document.getElementById('shutdown-form').submit();
-        document.body.innerHTML = '<h2 style="text-align:center; margin-top:100px;">Raspberry Pi wordt afgesloten...</h2>';
+        document.body.innerHTML = '<h2 style="text-align:center; margin-top:100px;">{{ t.setup.shutdown_msg }}</h2>';
        }
     }
     </script>
 </body>
 </html>
-

@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Quiz Results</title>
+    <title>{{ t.results.page_title }}</title>
     <meta http-equiv="refresh" content="2">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   </head>
 
   <body>
-    <h1>Quiz Overview</h1>
+    <h1>{{ t.results.heading }}</h1>
     <!-- DISPLAY RONDE -->
-    <h2>Ronde {{ current_round }} / {{ total_rounds }}: {{ round_descriptions.get(current_round|string, '') }}</h2>
+    <h2>{{ t.results.round_word }} {{ current_round }} / {{ total_rounds }}: {{ round_descriptions.get(current_round|string, '') }}</h2>
 
 
     <!-- KNOPPEN SELECTIE -->
@@ -19,7 +19,7 @@
       {% if not current_question_started and current_questions_completed < questions_per_round %}
         <form action="/start_question" method="post">
           <input type="submit"
-             value="Start Vraag {{ current_questions_completed + 1 }} / {{ questions_per_round }}"
+             value="{{ t.results.btn_start_question }} {{ current_questions_completed + 1 }} / {{ questions_per_round }}"
              class="startq"
              style="background-color:#2196F3; font-size:18px; padding:12px 30px;">
         </form>
@@ -29,8 +29,8 @@
         {% if current_question_started and current_question_has_winner %}
           {% if current_questions_completed + 1 < questions_per_round %}
             <form action="/next_question" method="post">
-              <input type="submit" 
-                value="Volgende Vraag {{ current_questions_completed + 2 }}"
+              <input type="submit"
+                value="{{ t.results.btn_next_question }} {{ current_questions_completed + 2 }}"
                 class="nextq"
                 style="background-color:#4CAF50; font-size:18px; padding:12px 30px;">
             </form>
@@ -38,15 +38,15 @@
             <!-- VOLGENDE RONDE -->
             {% elif current_round < total_rounds %}
               <form action="/increment_round" method="post">
-                <input type="submit" 
-                  value="Volgende Ronde"
+                <input type="submit"
+                  value="{{ t.results.btn_next_round }}"
                   class="nextr"
                   style="background-color:#00FFFF; font-size:18px; padding:12px 30px;">
               </form>
             {% else %}
               <!-- QUIZ COMPLEET -->
               <p style="color:#d32f2f; font-weight:bold; font-size:18px; margin:12px 0;">
-              Quiz compleet! Alle rondes zijn gespeeld.
+              {{ t.results.quiz_complete }}
               </p>
           {% endif %}
         {% endif %}
@@ -55,7 +55,7 @@
     <!-- COUNTDOWN TELLER -->
     {% if answer_timeout > 0 %}
     <div class="countdown" id="countdown">
-        Countdown: {{ remaining_time }}
+        {{ t.results.countdown_prefix }}{{ remaining_time }}
     </div>
     {% endif %}
 
@@ -63,15 +63,15 @@
     <table>
       <thead>
         <tr>
-          <th>Kleur</th>
-          <th>Speler / Team</th>
-          <th>Status</th>
-          <th>Positie</th>
-          <th>Snelheid (ms)</th>
-          <th>Actie</th>
-          <th>Score</th>
-          <th>Correct</th>
-          <th>Joker</th>
+          <th>{{ t.results.col_color }}</th>
+          <th>{{ t.results.col_player }}</th>
+          <th>{{ t.results.col_status }}</th>
+          <th>{{ t.results.col_rank }}</th>
+          <th>{{ t.results.col_speed_ms }}</th>
+          <th>{{ t.results.col_action }}</th>
+          <th>{{ t.results.col_score }}</th>
+          <th>{{ t.results.col_correct }}</th>
+          <th>{{ t.results.col_joker }}</th>
         </tr>
       </thead>
 
@@ -82,7 +82,7 @@
           <tr>
             <td>{{ player_colors.get(id, '') }}</td>
             <td>{{ player_names.get(id, id) }}</td>
-            <td>{% if offline_status[id] %} Offline {% elif id in disabled %} Uitgeschakeld {% else %} Aktief {% endif %}</td>
+            <td>{% if offline_status[id] %} {{ t.results.status_offline }} {% elif id in disabled %} {{ t.results.status_disabled }} {% else %} {{ t.results.status_active }} {% endif %}</td>
             <td>
               {% if id in press_order %}
                 {{ press_order.index(id) + 1 }}
@@ -97,7 +97,7 @@
             <td>
               {% if id in press_order %}
                 <form action="/disable/{{ id }}" method="post" style="display:inline;">
-                  <input type="submit" value="Fout (Blokeren)">
+                  <input type="submit" value="{{ t.results.btn_wrong_block }}">
                 </form>
               {% endif %}
             </td>
@@ -116,11 +116,11 @@
             </td>
             <td>
               {% if jokers.get(id) %}
-                Gebruikt in ronde {{ jokers.get(id) }}
+                {{ t.results.joker_used_prefix }} {{ jokers.get(id) }}
               {% elif current_questions_completed == 0 and not current_question_started %}
                 <form action="/set_joker/{{ id }}" method="post" style="display:inline;">
-                  <input type="submit" value="Inzet Joker" class="joker-button"
-                  onclick="return confirm('Deze ronde de Joker gebruiken? Punten worden dubbel geteld. Gebruik is eenmalig!');">
+                  <input type="submit" value="{{ t.results.btn_use_joker }}" class="joker-button"
+                  onclick="return confirm('{{ t.results.confirm_use_joker }}');">
                 </form>
               {% endif %}
             </td>
@@ -129,41 +129,42 @@
       </tbody>
     </table>
 
-    <p>Snelheid (ms): Gem: {{ avg_latency }} | Min: {{ min_latency }} | Max: {{ max_latency }}</p>
+    <p>{{ t.results.latency_label }}: {{ t.results.latency_avg }}: {{ avg_latency }} | {{ t.results.latency_min }}: {{ min_latency }} | {{ t.results.latency_max }}: {{ max_latency }}</p>
 
     <form action="/reset" method="post">
-        <input type="submit" value="Reset Ronde (Geen punten)">
+        <input type="submit" value="{{ t.results.btn_reset_round }}">
     </form>
 
     <br><br><br><br>
     <form action="/reset_scores" method="post">
-        <input type="submit" value="Reset alle scores" 
-        onclick="return confirm('Weet je zeker dat je alle scores wilt resetten?');">
+        <input type="submit" value="{{ t.results.btn_reset_scores }}"
+        onclick="return confirm('{{ t.results.confirm_reset_scores }}');">
     </form>
 
     <br><br>
     <form action="/reset_round" method="post">
-        <input type="submit" value="Reset Ronde Teller" 
-        onclick="return confirm('Weet je zeker dat je de ronde teller wilt resetten? Dit reset ook jokers.');">
+        <input type="submit" value="{{ t.results.btn_reset_round_counter }}"
+        onclick="return confirm('{{ t.results.confirm_reset_counter }}');">
     </form>
 
     <br><br>
     <form action="/reregister" method="post">
-        <input type="submit" value="Alle knoppen zoeken">
+        <input type="submit" value="{{ t.results.btn_find_buttons }}">
     </form>
 
     <!-- -->
-    <a href="/score" class="score-button">Score Overzicht</a>
-    <a href="/setup" class="setup-button">Setup</a>
+    <a href="/score" class="score-button">{{ t.common.score_overview_link }}</a>
+    <a href="/setup" class="setup-button">{{ t.common.setup_link }}</a>
 
     <!-- -->
     {% if answer_timeout > 0 %}
     <script>
+        const LANG_TIME_LEFT = "{{ t.results.time_left }}";
         let timeLeft = {{ remaining_time }};
         function updateCountdown() {
             const el = document.getElementById('countdown');
             if (timeLeft > 0) {
-                el.textContent = `Time left: ${timeLeft} seconds`;
+                el.textContent = LANG_TIME_LEFT.replace('{n}', timeLeft);
                 if (timeLeft <= 10) {
                     el.classList.add('zero');
                 }
@@ -180,4 +181,3 @@
 
   </body>
 </html>
-

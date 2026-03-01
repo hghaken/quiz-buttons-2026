@@ -3,10 +3,11 @@
   <head>
   </head>
   <body>
-    <h2 style="text-align:center; margin-top:100px;">Server herstart... even geduld</h2>
-    <p style="text-align:center;" id="status">Wachten op server...</p>
+    <h2 style="text-align:center; margin-top:100px;">{{ t.restart.heading }}</h2>
+    <p style="text-align:center;" id="status">{{ t.restart.waiting_msg }}</p>
 
     <script>
+      const LANG_STILL_BUSY = "{{ t.restart.still_busy }}";
       setTimeout(function tryConnect() {
         fetch('/')
         .then(response => {
@@ -14,7 +15,7 @@
           else setTimeout(tryConnect, 2000);
         })
         .catch(() => {
-          document.getElementById('status').textContent = 'Nog bezig...';
+          document.getElementById('status').textContent = LANG_STILL_BUSY;
           setTimeout(tryConnect, 2000);
         });
       }, 3000);

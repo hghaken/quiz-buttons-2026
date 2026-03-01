@@ -25,6 +25,7 @@ ROUND_DESC_FILE      = '/home/game/quiz/round_descriptions.json'
 JOKERS_FILE          = '/home/game/quiz/jokers.json'
 CORRECT_ANSWERS_FILE = '/home/game/quiz/correct_answers.json'
 LED_BRIGHTNESS_FILE  = '/home/game/quiz/led_brightness.json'
+LANG_DIR             = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lang')
 
 
 # =========================================================================== BESTAND HELPERS =====
@@ -43,6 +44,18 @@ def save_json(filepath, data):
 
 # =========================================================================== DATA LADEN =====
 config             = load_json(CONFIG_FILE, {})
+
+# =========================================================================== TAAL =====
+lang_strings = {}
+
+def load_language(code):
+    global lang_strings
+    path = os.path.join(LANG_DIR, f'{code}.json')
+    with open(path, 'r', encoding='utf-8') as f:
+        lang_strings = json.load(f)
+
+load_language(config.get('language', 'nl'))
+
 player_names       = load_json(PLAYER_NAMES_FILE, {})
 player_colors      = load_json(PLAYER_COLORS_FILE, {})
 led_brightness     = load_json(LED_BRIGHTNESS_FILE, {'r': 255, 'g': 255, 'b': 255})
@@ -93,7 +106,8 @@ def save_config():
     save_json(CONFIG_FILE, {
         'answer_timeout': ANSWER_TIMEOUT,
         'total_rounds': TOTAL_ROUNDS,
-        'questions_per_round': QUESTIONS_PER_ROUND
+        'questions_per_round': QUESTIONS_PER_ROUND,
+        'language': config.get('language', 'nl')
     })
 
 def load_jokers():
@@ -105,6 +119,10 @@ load_jokers()
 
 # =========================================================================== FLASK APP =====
 app = Flask(__name__)
+
+@app.context_processor
+def inject_lang():
+    return {'t': lang_strings}
 
 
 # =========================================================================== GLOBALS =====
@@ -535,7 +553,8 @@ def setup_page():
                            button_versions=button_versions,
                            button_ips=button_ips,
                            led_brightness=led_brightness,
-                           version=VERSION)
+                           version=VERSION,
+                           language=config.get('language', 'nl'))
 
 
 @app.route('/set_timeout', methods=['POST'])
@@ -600,6 +619,17 @@ def set_led_brightness():
     led_brightness = {'r': r, 'g': g, 'b': b}
     save_led_brightness()
     broadcast_brightness()
+    return redirect(url_for('setup_page'))
+
+
+@app.route('/set_language', methods=['POST'])
+def set_language():
+    code = request.form.get('language', 'nl')
+    if code not in ('nl', 'en'):
+        code = 'nl'
+    config['language'] = code
+    save_config()
+    load_language(code)
     return redirect(url_for('setup_page'))
 
 
