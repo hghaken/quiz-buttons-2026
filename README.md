@@ -119,6 +119,16 @@ Each button unit is powered by a LiPo battery with an integrated charger and boo
 | 3.7V 10000mAh 1260110 Li-ion Polymer Battery | Rechargeable LiPo battery |
 | LX-LCBST TP4056 Module | Li-ion charger + DC-DC step-up boost converter (charges via USB, boosts 3.7V → 5V for ESP32) |
 
+#### Battery Life Estimate
+
+| Scenario | Draw | Estimated Runtime |
+|---|---|---|
+| Peak (WiFi TX bursts) | 125 mA | ~68 hours |
+| Average (WiFi idle) | ~70 mA | ~120 hours (~5 days) |
+
+Assumptions: boost converter efficiency 85–90% → usable capacity ≈ 8,500 mAh; LiPo discharged to 3.0V cutoff.
+For a typical quiz evening of a few hours, the 10,000 mAh battery will last **dozens of sessions** between charges.
+
 ---
 
 ## Software Architecture
