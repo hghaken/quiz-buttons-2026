@@ -238,7 +238,7 @@ Library: `knolleary/PubSubClient@^2.8`
 Edit the constants at the top of [src/main.cpp](src/main.cpp):
 
 ```cpp
-const char* version    = "v0.8 (01-03-2026)";
+const char* version    = "v0.13 (01-03-2026)";
 const char* ssid       = "your-wifi-ssid";
 const char* password   = "your-wifi-password";
 const char* mqttServer = "192.168.0.10";   // Raspberry Pi IP
@@ -287,7 +287,7 @@ Server start → Round 1, Question 1
      │
      ▼
 Players press buttons → Press order recorded
-     │                   Rank colors assigned (Blue=1st, Cyan=2nd, Yellow=3rd, White=rest)
+     │                   Rank colors assigned (Blue=1st, Purple=2nd, Yellow=3rd, White=rest)
      ▼
 Countdown timer starts (configurable, default 30s)
      │
@@ -348,7 +348,7 @@ Green (init) → Red (WiFi connected) → White (NTP synced) → Blue (MQTT read
 
 | Topic | Direction | Payload | Description |
 |---|---|---|---|
-| `quiz/all` | Pi → Buttons | `enable`, `disable`, `lock`, `unlock`, `reset`, `reregister`, `ota` | Broadcast command to all buttons |
+| `quiz/all` | Pi → Buttons | `enable`, `disable`, `lock`, `unlock`, `reset`, `reregister`, `ota`, `brightness:R,G,B` | Broadcast command to all buttons |
 | `quiz/<id>` | Pi → Button | `enable`, `disable`, `buzz`, `rank:1`…`rank:4`, `ota` | Command to specific button |
 | `quiz/register` | Button → Pi | `<button-id>` | Button announces itself on connect |
 | `quiz/version` | Button → Pi | `<id>,<version>,<ip>` | Firmware version + IP report |
@@ -381,12 +381,13 @@ The main quizmaster dashboard. Auto-refreshes every 2 seconds.
 
 | Section | Setting |
 |---|---|
-| 1 | Answer timeout (15 / 20 / 25 / 30 / 40 / 60 seconds) |
+| 1 | Answer timeout in seconds (0 = disabled) |
 | 2 | Total number of rounds |
 | 3 | Number of questions per round |
 | 4 | Round descriptions (e.g. "Music Round", "General Knowledge") |
 | 5 | Player / team names and display colors per button |
-| 6 | OTA firmware update (upload .bin + trigger update per button or all) |
+| 6 | RGB LED brightness (separate R/G/B sliders, 0–255) |
+| 7 | OTA firmware update (upload .bin + trigger update per button or all) |
 
 Also: Restart server, Shutdown Pi, software version display.
 
@@ -415,6 +416,7 @@ Quiz Buttons 2026/
 │   ├── jokers.json               # Joker usage
 │   ├── current_round.json        # Current round state
 │   ├── round_descriptions.json   # Round labels
+│   ├── led_brightness.json       # RGB LED brightness per channel
 │   ├── static/
 │   │   └── style.css
 │   └── templates/
@@ -435,7 +437,7 @@ Quiz Buttons 2026/
 
 | Component | Version | File |
 |---|---|---|
-| ESP32 Firmware | v0.8 (01-03-2026) | `src/main.cpp` |
+| ESP32 Firmware | v0.13 (01-03-2026) | `src/main.cpp` |
 | Quiz Server | v1.0.5 (01-03-2026) | `raspberry_pi/server.py` |
 
 Server version is displayed in the bottom-right corner of the Setup page.
