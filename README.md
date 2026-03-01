@@ -94,6 +94,15 @@ The Pi runs a **Flask** web server that the quizmaster uses to manage the game.
 |---|---|
 | GPIO 17 | Active buzzer (quizmaster feedback) |
 
+### ESP32 Power Supply
+
+Each button unit is powered by a LiPo battery with an integrated charger and boost converter:
+
+| Part | Description |
+|---|---|
+| 3.7V 10000mAh 1260110 Li-ion Polymer Battery | Rechargeable LiPo battery |
+| LX-LCBST TP4056 Module | Li-ion charger + DC-DC step-up boost converter (charges via USB, boosts 3.7V → 5V for ESP32) |
+
 ---
 
 ## Software Architecture
