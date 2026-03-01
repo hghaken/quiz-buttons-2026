@@ -10,15 +10,10 @@
     <!-- Answer Timeout -->
     <h2>1. Answer Timeout</h2>
     <form action="/set_timeout" method="post">
-        <label for="timeout">Timeout na buzz (seconden):</label><br><br>
-        <select name="timeout" id="timeout" style="padding:8px; font-size:16px;">
-            <option value="15"  {% if current_timeout == 15 %}selected{% endif %}>15 seconden</option>
-            <option value="20"  {% if current_timeout == 20 %}selected{% endif %}>20 seconden</option>
-            <option value="25"  {% if current_timeout == 25 %}selected{% endif %}>25 seconden</option>
-            <option value="30"  {% if current_timeout == 30 %}selected{% endif %}>30 seconden</option>
-            <option value="40"  {% if current_timeout == 40 %}selected{% endif %}>40 seconden</option>
-            <option value="60"  {% if current_timeout == 60 %}selected{% endif %}>60 seconden</option>
-        </select>
+        <label for="timeout">Timeout na buzz (seconden, 0 = uitgeschakeld):</label><br><br>
+        <input type="number" name="timeout" id="timeout"
+               value="{{ current_timeout }}" min="0"
+               style="padding:8px; font-size:16px; width:100px;">
         <br><br>
         <input type="submit" value="Opslaan" class="save-button">
     </form>

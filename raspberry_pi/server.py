@@ -145,6 +145,10 @@ def unlock_buttons():
 
 def start_answer_timer():
     global answer_end_time, timer_thread
+    if ANSWER_TIMEOUT == 0:
+        print("Answer timer disabled (timeout = 0)")
+        answer_end_time = None
+        return
     print(f"Starting answer timer for {ANSWER_TIMEOUT} seconds")
     answer_end_time = time.time() + ANSWER_TIMEOUT
     def timer_func():
