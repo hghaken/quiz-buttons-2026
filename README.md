@@ -79,14 +79,14 @@ The Pi runs a **Flask** web server that the quizmaster uses to manage the game.
 
 #### ESP32-S3 (Seeed XIAO ESP32-S3)
 
-| Pin | GPIO | Function |
-|---|---|---|
-| D0 | GPIO 1 | Button (INPUT_PULLUP → GND) |
-| D1 | GPIO 2 | Active buzzer (→ GND) |
-| D2 | GPIO 3 | Status LED (solid = MQTT connected, flash = disconnected) |
-| D8 | GPIO 7 | RED LED (PWM) |
-| D9 | GPIO 8 | GREEN LED (PWM) |
-| D10 | GPIO 9 | BLUE LED (PWM) |
+| Pin | GPIO | Function | Resistor |
+|---|---|---|---|
+| D0 | GPIO 1 | Button (INPUT_PULLUP → GND) | — |
+| D1 | GPIO 2 | Active buzzer (→ GND) | 47 Ω |
+| D2 | GPIO 3 | Status LED (solid = MQTT connected, flash = disconnected) | 47 Ω |
+| D8 | GPIO 7 | RED LED (PWM) | 100 Ω |
+| D9 | GPIO 8 | GREEN LED (PWM) | 47 Ω |
+| D10 | GPIO 9 | BLUE LED (PWM) | 47 Ω |
 
 #### Raspberry Pi 4B
 
