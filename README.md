@@ -94,6 +94,20 @@ The Pi runs a **Flask** web server that the quizmaster uses to manage the game.
 |---|---|
 | GPIO 17 | Active buzzer (quizmaster feedback) |
 
+### 3D Printed Enclosure
+
+The button housing is designed in **FreeCAD** and printed in 5 parts.
+Source and print files are in the [`3D Printer Files/`](3D%20Printer%20Files/) folder.
+
+| File | Description |
+|---|---|
+| `QuizButton2026.FCStd` | FreeCAD source file (full assembly) |
+| `QuizButton2026-PartQB2026MainV3.3mf` | Main body |
+| `QuizButton2026-PartQB2026Top.3mf` | Top cover |
+| `QuizButton2026-PartQB2026Bottom.3mf` | Bottom plate |
+| `QuizButton2026-PartQB2026AccuBracket.3mf` | Battery bracket |
+| `QuizButton2026-PartQB2026AccuSupport.3mf` | Battery support |
+
 ### ESP32 Power Supply
 
 Each button unit is powered by a LiPo battery with an integrated charger and boost converter:
@@ -370,6 +384,13 @@ Also: Restart server, Shutdown Pi, software version display.
 
 ```
 Quiz Buttons 2026/
+├── 3D Printer Files/
+│   ├── QuizButton2026.FCStd      # FreeCAD source (full assembly)
+│   ├── QuizButton2026-PartQB2026MainV3.3mf
+│   ├── QuizButton2026-PartQB2026Top.3mf
+│   ├── QuizButton2026-PartQB2026Bottom.3mf
+│   ├── QuizButton2026-PartQB2026AccuBracket.3mf
+│   └── QuizButton2026-PartQB2026AccuSupport.3mf
 ├── src/
 │   └── main.cpp                  # ESP32-S3 Arduino firmware
 ├── raspberry_pi/
